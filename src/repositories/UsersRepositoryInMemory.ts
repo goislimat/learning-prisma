@@ -1,8 +1,36 @@
 import { User } from "@prisma/client";
+import { hashSync } from "bcryptjs";
 import iUsersRepository, { iCreateUserParams } from "./iUsersRepository";
 
 class UsersRepositoryInMemory implements iUsersRepository {
-  public users: User[] = [];
+  public users: User[] = [
+    {
+      id: 1123,
+      name: "jane doe",
+      email: "janedoe@example.com",
+      password: hashSync("123456"),
+      isAdmin: false,
+      createdAt: new Date("01/01/2023"),
+      updatedAt: new Date("01/01/2023"),
+    },
+  ];
+
+  async findByEmail(email: string): Promise<User> {
+    const user: Promise<User> = new Promise((resolve, reject) => {
+      const userExists = this.users.find((user) => user.email === email);
+
+      if (userExists) {
+        resolve(userExists);
+      }
+
+      reject({
+        status: 404,
+        message: "This email/password combination is not valid",
+      });
+    });
+
+    return user;
+  }
 
   async save({ name, email, password }: iCreateUserParams): Promise<User> {
     const createdUser: Promise<User> = new Promise((resolve, reject) => {
