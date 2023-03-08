@@ -24,7 +24,7 @@ class UsersRepositoryInMemory implements iUsersRepository {
       }
 
       reject({
-        status: 404,
+        statusCode: 404,
         message: "This email/password combination is not valid",
       });
     });
@@ -37,7 +37,7 @@ class UsersRepositoryInMemory implements iUsersRepository {
       const userAlreadyExists = this.users.find((user) => user.email === email);
 
       if (userAlreadyExists) {
-        reject({ status: 400, message: "This email is already taken" });
+        reject({ statusCode: 400, message: "This email is already taken" });
       }
 
       const newUser: User = {

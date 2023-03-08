@@ -17,7 +17,7 @@ class UsersRepository implements iUsersRepository {
       return user;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        if (err.code === "P2015") {
+        if (err.code === "P2025") {
           throw new HandledError(
             "This email/password combination is not valid",
             404
