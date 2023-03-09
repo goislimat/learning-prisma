@@ -1,8 +1,8 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import HandledError from "../utils/HandledError";
 import IDishesRepository, {
+  ICreateDishParams,
   IDishCreatedResponse,
-  INewDish,
 } from "./IDishesRepository";
 
 class DishesRepository implements IDishesRepository {
@@ -15,7 +15,7 @@ class DishesRepository implements IDishesRepository {
     ingredients,
     price,
     description,
-  }: INewDish): Promise<IDishCreatedResponse> {
+  }: ICreateDishParams): Promise<IDishCreatedResponse> {
     try {
       const createdDish = await this.prisma.dish.create({
         data: {

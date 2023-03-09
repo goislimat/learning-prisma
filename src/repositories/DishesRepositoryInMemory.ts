@@ -1,12 +1,12 @@
 import IDishesRepository, {
+  ICreateDishParams,
   IDishCreatedResponse,
-  INewDish,
 } from "./IDishesRepository";
 
 class DishesRepositoryInMemory implements IDishesRepository {
   public dishes: IDishCreatedResponse[] = [];
 
-  async save(dish: INewDish): Promise<IDishCreatedResponse> {
+  async save(dish: ICreateDishParams): Promise<IDishCreatedResponse> {
     const dishWithIngredients: Promise<IDishCreatedResponse> = new Promise(
       (resolve, reject) => {
         const createdDish = {

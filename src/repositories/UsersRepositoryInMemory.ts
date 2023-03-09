@@ -1,8 +1,8 @@
 import { User } from "@prisma/client";
 import { hashSync } from "bcryptjs";
-import iUsersRepository, { iCreateUserParams } from "./iUsersRepository";
+import IUsersRepository, { ICreateUserParams } from "./IUsersRepository";
 
-class UsersRepositoryInMemory implements iUsersRepository {
+class UsersRepositoryInMemory implements IUsersRepository {
   public users: User[] = [
     {
       id: 1123,
@@ -32,7 +32,7 @@ class UsersRepositoryInMemory implements iUsersRepository {
     return user;
   }
 
-  async save({ name, email, password }: iCreateUserParams): Promise<User> {
+  async save({ name, email, password }: ICreateUserParams): Promise<User> {
     const createdUser: Promise<User> = new Promise((resolve, reject) => {
       const userAlreadyExists = this.users.find((user) => user.email === email);
 

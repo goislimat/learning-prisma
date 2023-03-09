@@ -1,9 +1,8 @@
 import { Prisma, PrismaClient, User } from "@prisma/client";
 import HandledError from "../utils/HandledError";
+import IUsersRepository, { ICreateUserParams } from "./IUsersRepository";
 
-import iUsersRepository, { iCreateUserParams } from "./iUsersRepository";
-
-class UsersRepository implements iUsersRepository {
+class UsersRepository implements IUsersRepository {
   private prisma = new PrismaClient();
 
   async findByEmail(email: string): Promise<User> {
@@ -29,7 +28,7 @@ class UsersRepository implements iUsersRepository {
     }
   }
 
-  async save({ name, email, password }: iCreateUserParams) {
+  async save({ name, email, password }: ICreateUserParams): Promise<User> {
     try {
       const user = await this.prisma.user.create({
         data: {

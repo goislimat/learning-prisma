@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 
-import UsersService from "../services/UsersService";
 import UsersRepository from "../repositories/UsersRepository";
-import { User } from "@prisma/client";
+import UsersService from "../services/UsersService";
 
 class UsersController {
   async create(req: Request, res: Response) {

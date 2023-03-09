@@ -1,8 +1,9 @@
 import { User } from "@prisma/client";
 import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
+
 import jwt from "../config/auth";
-import iUsersRepository from "../repositories/iUsersRepository";
+import IUsersRepository from "../repositories/IUsersRepository";
 import HandledError from "../utils/HandledError";
 
 interface UserParams {
@@ -11,7 +12,7 @@ interface UserParams {
 }
 
 class SessionsService {
-  constructor(private usersRepository: iUsersRepository) {}
+  constructor(private usersRepository: IUsersRepository) {}
 
   async create({ email, password }: UserParams): Promise<[User, string]> {
     const user = await this.usersRepository.findByEmail(email);

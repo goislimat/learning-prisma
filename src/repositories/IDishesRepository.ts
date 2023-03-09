@@ -1,6 +1,6 @@
 import { Dish, Ingredient } from "@prisma/client";
 
-export interface INewDish {
+export interface ICreateDishParams {
   image: string;
   name: string;
   category: string;
@@ -14,7 +14,7 @@ export interface IDishCreatedResponse extends Dish {
 }
 
 interface IDishesRepository {
-  save(data: INewDish): Promise<IDishCreatedResponse>;
+  save(data: ICreateDishParams): Promise<IDishCreatedResponse>;
 }
 
 export default IDishesRepository;
