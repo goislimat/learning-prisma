@@ -40,7 +40,7 @@ describe("UsersSevice", () => {
     await usersService.createUser(newUser);
 
     await expect(usersService.createUser(repeatedUser)).rejects.toEqual({
-      status: 400,
+      statusCode: 400,
       message: "This email is already taken",
     });
   });
