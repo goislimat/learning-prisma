@@ -37,21 +37,28 @@ class DishesService {
     }
 
     const diskStorageService = new DiskStorageService();
-    await diskStorageService.saveFile(image);
 
-    const ingredientsArray = this.getIngredientsArray(ingredients);
-    const priceNumber = this.getPriceAsNumber(price);
+    try {
+      await diskStorageService.saveFile(image);
 
-    const dish = await this.dishesRepository.save({
-      name,
-      category,
-      ingredients: ingredientsArray,
-      description,
-      price: priceNumber,
-      image,
-    });
+      const ingredientsArray = this.getIngredientsArray(ingredients);
+      const priceNumber = this.getPriceAsNumber(price);
 
-    return this.getFormattedDish(dish);
+      const dish = await this.dishesRepository.save({
+        name,
+        category,
+        ingredients: ingredientsArray,
+        description,
+        price: priceNumber,
+        image,
+      });
+
+      return this.getFormattedDish(dish);
+    } catch (err) {
+      diskStorageService.deleteFile(image);
+
+      throw err;
+    }
   }
 
   private getIngredientsArray(ingredients: string): string[] {
