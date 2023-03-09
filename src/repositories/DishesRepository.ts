@@ -1,6 +1,9 @@
-import { Dish, Ingredient, Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import HandledError from "../utils/HandledError";
-import IDishesRepository, { INewDish } from "./IDishesRepository";
+import IDishesRepository, {
+  IDishCreatedResponse,
+  INewDish,
+} from "./IDishesRepository";
 
 class DishesRepository implements IDishesRepository {
   private prisma = new PrismaClient();
@@ -12,7 +15,7 @@ class DishesRepository implements IDishesRepository {
     ingredients,
     price,
     description,
-  }: INewDish): Promise<Dish & { ingredients: Ingredient[] }> {
+  }: INewDish): Promise<IDishCreatedResponse> {
     try {
       const createdDish = await this.prisma.dish.create({
         data: {
