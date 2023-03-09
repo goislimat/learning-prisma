@@ -1,4 +1,5 @@
-import { Dish, Ingredient, PrismaClient } from "@prisma/client";
+import { Dish, Ingredient, Prisma, PrismaClient } from "@prisma/client";
+import HandledError from "../utils/HandledError";
 import IDishesRepository, { INewDish } from "./IDishesRepository";
 
 class DishesRepository implements IDishesRepository {
@@ -12,30 +13,41 @@ class DishesRepository implements IDishesRepository {
     price,
     description,
   }: INewDish): Promise<Dish & { ingredients: Ingredient[] }> {
-    const createdDish = await this.prisma.dish.create({
-      data: {
-        image,
-        name,
-        category,
-        ingredients: {
-          connectOrCreate: ingredients.map((ingredient) => ({
-            create: {
-              name: ingredient,
-            },
-            where: {
-              name: ingredient,
-            },
-          })),
+    try {
+      const createdDish = await this.prisma.dish.create({
+        data: {
+          image,
+          name,
+          category,
+          ingredients: {
+            connectOrCreate: ingredients.map((ingredient) => ({
+              create: {
+                name: ingredient,
+              },
+              where: {
+                name: ingredient,
+              },
+            })),
+          },
+          price,
+          description,
         },
-        price,
-        description,
-      },
-      include: {
-        ingredients: true,
-      },
-    });
+        include: {
+          ingredients: true,
+        },
+      });
 
-    return createdDish;
+      return createdDish;
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientValidationError) {
+        throw new HandledError(
+          "A new record could not be created with the provided data",
+          400
+        );
+      }
+
+      throw err;
+    }
   }
 }
 
