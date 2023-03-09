@@ -1,10 +1,12 @@
 import { Router } from "express";
-import usersRouter from "./users";
+import dishesRouter from "./dishes";
 import sessionsRouter from "./sessions";
+import usersRouter from "./users";
 
 const router = Router();
 
-router.use("/users", usersRouter);
+router.use("/dishes", dishesRouter);
 router.use("/sessions", sessionsRouter);
+router.use("/users", usersRouter);
 
 export default router;
