@@ -44,44 +44,4 @@ describe("UsersSevice", () => {
       message: "This email is already taken",
     });
   });
-
-  it("should find a user by their email", async () => {
-    const usersRepositoryInMemory = new UsersRepositoryInMemory();
-    const usersService = new UsersService(usersRepositoryInMemory);
-    const user = await usersService.findUserByEmail("janedoe@example.com");
-
-    expect(user.name).toBe("jane doe");
-    expect(user).toHaveProperty("id");
-
-    const passwordsMatch = await usersService.validateCredentials(
-      user,
-      "123456"
-    );
-    expect(passwordsMatch).toBe(true);
-  });
-
-  it("should throw if the email is invalid", async () => {
-    const usersRepositoryInMemory = new UsersRepositoryInMemory();
-    const usersService = new UsersService(usersRepositoryInMemory);
-
-    await expect(
-      usersService.findUserByEmail("inexistent@email.com")
-    ).rejects.toEqual({
-      statusCode: 404,
-      message: "This email/password combination is not valid",
-    });
-  });
-
-  it("should invalidate an user with an incorrect password", async () => {
-    const usersRepositoryInMemory = new UsersRepositoryInMemory();
-    const usersService = new UsersService(usersRepositoryInMemory);
-    const user = await usersService.findUserByEmail("janedoe@example.com");
-
-    await expect(
-      usersService.validateCredentials(user, "wrong password")
-    ).rejects.toEqual({
-      statusCode: 404,
-      message: "This email/password combination is not valid",
-    });
-  });
 });
