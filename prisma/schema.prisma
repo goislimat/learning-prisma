@@ -18,4 +18,26 @@ model User {
   isAdmin   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  favorites Dish[]
+}
+
+model Dish {
+  id          Int          @id @default(autoincrement())
+  image       String
+  name        String
+  category    String
+  price       Int
+  description String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  ingredients Ingredient[]
+  favoritedBy User[]
+}
+
+model Ingredient {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  presentIn Dish[]
 }
