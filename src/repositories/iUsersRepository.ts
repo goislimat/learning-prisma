@@ -1,14 +1,14 @@
 import { User } from "@prisma/client";
 
-export interface iCreateUserParams {
+export interface ICreateUserParams {
   name: string;
   email: string;
   password: string;
 }
 
-interface iUsersRepository {
+interface IUsersRepository {
   findByEmail: (email: string) => Promise<User>;
-  save: (params: iCreateUserParams) => Promise<User>;
+  save: (params: ICreateUserParams) => Promise<User>;
 }
 
-export default iUsersRepository;
+export default IUsersRepository;
