@@ -1,13 +1,55 @@
 import IDishesRepository, {
   ICreateDishParams,
-  IDishCreatedResponse,
+  IDishWithIngredients,
 } from "./IDishesRepository";
 
 class DishesRepositoryInMemory implements IDishesRepository {
-  public dishes: IDishCreatedResponse[] = [];
+  public dishes: IDishWithIngredients[] = [
+    {
+      id: 1,
+      image: "1678369738935-756807316-carbonara.webp",
+      name: "Spaghetti alla Carbonarra",
+      category: "meal",
+      price: 1999,
+      description:
+        "Spaghetti made on bacon fat with spices and decorated with bacon cubes and grated cheese",
+      createdAt: new Date(Date.now()),
+      updatedAt: new Date(Date.now()),
+      ingredients: [
+        {
+          id: 1,
+          name: "pasta",
+          createdAt: new Date(Date.now()),
+          updatedAt: new Date(Date.now()),
+        },
+        {
+          id: 2,
+          name: "cheese",
+          createdAt: new Date(Date.now()),
+          updatedAt: new Date(Date.now()),
+        },
+        {
+          id: 3,
+          name: "bacon",
+          createdAt: new Date(Date.now()),
+          updatedAt: new Date(Date.now()),
+        },
+      ],
+    },
+  ];
 
-  async save(dish: ICreateDishParams): Promise<IDishCreatedResponse> {
-    const dishWithIngredients: Promise<IDishCreatedResponse> = new Promise(
+  async findAll(): Promise<IDishWithIngredients[]> {
+    const allDishes: Promise<IDishWithIngredients[]> = new Promise(
+      (resolve) => {
+        resolve(this.dishes);
+      }
+    );
+
+    return allDishes;
+  }
+
+  async save(dish: ICreateDishParams): Promise<IDishWithIngredients> {
+    const dishWithIngredients: Promise<IDishWithIngredients> = new Promise(
       (resolve, reject) => {
         const createdDish = {
           ...dish,

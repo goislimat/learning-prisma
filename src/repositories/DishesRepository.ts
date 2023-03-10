@@ -2,11 +2,21 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import HandledError from "../utils/HandledError";
 import IDishesRepository, {
   ICreateDishParams,
-  IDishCreatedResponse,
+  IDishWithIngredients,
 } from "./IDishesRepository";
 
 class DishesRepository implements IDishesRepository {
   private prisma = new PrismaClient();
+
+  async findAll(): Promise<IDishWithIngredients[]> {
+    const dishes = await this.prisma.dish.findMany({
+      include: {
+        ingredients: true,
+      },
+    });
+
+    return dishes;
+  }
 
   async save({
     image,
@@ -15,7 +25,7 @@ class DishesRepository implements IDishesRepository {
     ingredients,
     price,
     description,
-  }: ICreateDishParams): Promise<IDishCreatedResponse> {
+  }: ICreateDishParams): Promise<IDishWithIngredients> {
     try {
       const createdDish = await this.prisma.dish.create({
         data: {

@@ -1,11 +1,12 @@
-import "express-async-errors";
 import express, {
   ErrorRequestHandler,
   NextFunction,
   Request,
   Response,
 } from "express";
+import "express-async-errors";
 
+import path from "path";
 import appRoutes from "./routes";
 import HandledError from "./utils/HandledError";
 
@@ -15,6 +16,7 @@ const port = 3081;
 
 app.use(express.json());
 app.use(appRoutes);
+app.use("/files", express.static(path.resolve(__dirname, "..", "uploads")));
 app.use(
   (
     err: ErrorRequestHandler,

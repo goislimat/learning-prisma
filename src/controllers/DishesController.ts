@@ -5,6 +5,15 @@ import DishesService from "../services/DishesService";
 import DiskStorageService from "../services/DiskStorageService";
 
 class DishesController {
+  async index(req: Request, res: Response) {
+    const dishesRepository = new DishesRepository();
+    const dishesService = new DishesService(dishesRepository);
+
+    const dishes = await dishesService.getAllDishes();
+
+    return res.json(dishes);
+  }
+
   async create(req: Request, res: Response) {
     const { name, category, ingredients, description, price } = req.body;
     const filename = req.file?.filename;

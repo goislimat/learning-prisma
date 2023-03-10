@@ -85,4 +85,14 @@ describe("DishesService", () => {
     expect(saveFileSpy).toHaveBeenCalledWith(dishFields.image);
     expect(deleteFileSpy).toHaveBeenCalledWith(dishFields.image);
   });
+
+  it("should be able to return all dishes", async () => {
+    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
+    const dishesService = new DishesService(dishesRepositoryInMemory);
+
+    const dishes = await dishesService.getAllDishes();
+
+    expect(dishes).toHaveLength(1);
+    expect(dishes[0]).toHaveProperty("id");
+  });
 });
