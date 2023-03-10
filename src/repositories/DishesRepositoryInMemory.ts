@@ -1,3 +1,4 @@
+import HandledError from "../utils/HandledError";
 import IDishesRepository, {
   ICreateDishParams,
   IDishWithIngredients,
@@ -8,7 +9,7 @@ class DishesRepositoryInMemory implements IDishesRepository {
     {
       id: 1,
       image: "1678369738935-756807316-carbonara.webp",
-      name: "Spaghetti alla Carbonarra",
+      name: "Spaghetti alla Carbonara",
       category: "meal",
       price: 1999,
       description:
@@ -46,6 +47,24 @@ class DishesRepositoryInMemory implements IDishesRepository {
     );
 
     return allDishes;
+  }
+
+  async findById(id: number): Promise<IDishWithIngredients> {
+    const dish: Promise<IDishWithIngredients> = new Promise(
+      (resolve, reject) => {
+        const fetchedDish = this.dishes.find((d) => d.id === id);
+
+        if (fetchedDish) {
+          resolve(fetchedDish);
+        }
+
+        reject(
+          new HandledError(`Could not find a dish record with id: ${id}`, 404)
+        );
+      }
+    );
+
+    return dish;
   }
 
   async save(dish: ICreateDishParams): Promise<IDishWithIngredients> {

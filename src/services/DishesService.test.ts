@@ -95,4 +95,24 @@ describe("DishesService", () => {
     expect(dishes).toHaveLength(1);
     expect(dishes[0]).toHaveProperty("id");
   });
+
+  it("should be able to fetch an existing record", async () => {
+    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
+    const dishesService = new DishesService(dishesRepositoryInMemory);
+
+    const dish = await dishesService.getDishById("1");
+
+    expect(dish).toBeDefined();
+    expect(dish.name).toEqual("Spaghetti alla Carbonara");
+  });
+
+  it("should throw a 404 if no record is found", async () => {
+    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
+    const dishesService = new DishesService(dishesRepositoryInMemory);
+
+    await expect(dishesService.getDishById("88")).rejects.toEqual({
+      statusCode: 404,
+      message: `Could not find a dish record with id: 88`,
+    });
+  });
 });
