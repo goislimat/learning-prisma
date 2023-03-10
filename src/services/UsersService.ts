@@ -8,6 +8,12 @@ import IUsersRepository, {
 class UsersService {
   constructor(private userRepository: IUsersRepository) {}
 
+  async getById(id: number): Promise<User> {
+    const user = await this.userRepository.findById(id);
+
+    return user;
+  }
+
   async createUser({
     name,
     email,

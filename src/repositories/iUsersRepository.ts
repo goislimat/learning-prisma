@@ -7,6 +7,7 @@ export interface ICreateUserParams {
 }
 
 interface IUsersRepository {
+  findById: (id: number) => Promise<User>;
   findByEmail: (email: string) => Promise<User>;
   save: (params: ICreateUserParams) => Promise<User>;
 }

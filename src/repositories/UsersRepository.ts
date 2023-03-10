@@ -5,6 +5,21 @@ import IUsersRepository, { ICreateUserParams } from "./IUsersRepository";
 class UsersRepository implements IUsersRepository {
   private prisma = new PrismaClient();
 
+  async findById(id: number): Promise<User> {
+    try {
+      const user = await this.prisma.user.findFirstOrThrow({
+        where: {
+          id,
+        },
+      });
+
+      return user;
+    } catch (err) {
+      // TODO tests this in a way we can see the error that is being thrown
+      throw err;
+    }
+  }
+
   async findByEmail(email: string): Promise<User> {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
