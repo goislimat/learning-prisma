@@ -9,12 +9,13 @@ export interface ICreateDishParams {
   price: number;
 }
 
-export interface IDishCreatedResponse extends Dish {
+export interface IDishWithIngredients extends Dish {
   ingredients: Ingredient[];
 }
 
 interface IDishesRepository {
-  save(data: ICreateDishParams): Promise<IDishCreatedResponse>;
+  findAll(): Promise<IDishWithIngredients[]>;
+  save(data: ICreateDishParams): Promise<IDishWithIngredients>;
 }
 
 export default IDishesRepository;

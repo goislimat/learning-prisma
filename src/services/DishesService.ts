@@ -1,5 +1,5 @@
 import IDishesRepository, {
-  IDishCreatedResponse,
+  IDishWithIngredients,
 } from "../repositories/IDishesRepository";
 import HandledError from "../utils/HandledError";
 import DiskStorageService from "./DiskStorageService";
@@ -14,6 +14,7 @@ interface IDishFields {
 }
 
 interface IFormattedDish {
+  id: number;
   name: string;
   category: string;
   ingredients: string[];
@@ -25,8 +26,14 @@ interface IFormattedDish {
 class DishesService {
   constructor(
     private dishesRepository: IDishesRepository,
-    private diskStorageService: DiskStorageService
+    private diskStorageService: DiskStorageService = {} as DiskStorageService
   ) {}
+
+  async getAllDishes(): Promise<IFormattedDish[]> {
+    const dishes = await this.dishesRepository.findAll();
+
+    return dishes.map((dish) => this.getFormattedDish(dish));
+  }
 
   async createDish({
     name,
@@ -80,7 +87,7 @@ class DishesService {
     return Number(price.replace(/\D/g, ""));
   }
 
-  private getFormattedDish(dish: IDishCreatedResponse): IFormattedDish {
+  private getFormattedDish(dish: IDishWithIngredients): IFormattedDish {
     return {
       ...dish,
       ingredients: dish.ingredients.map((ingredient) => ingredient.name),
