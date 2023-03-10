@@ -1,0 +1,11 @@
+import { Router } from "express";
+
+import LikesController from "../controllers/LikesController";
+import ensureAuthenticated from "../middlewares/ensureAuthenticated";
+
+const router = Router();
+const likesController = new LikesController();
+
+router.post("/:dishId", ensureAuthenticated, likesController.create);
+
+export default router;

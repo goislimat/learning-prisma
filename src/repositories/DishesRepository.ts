@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import HandledError from "../utils/HandledError";
 import IDishesRepository, {
+  IAddLike,
   ICreateDishParams,
   IDishWithIngredients,
 } from "./IDishesRepository";
@@ -81,6 +82,21 @@ class DishesRepository implements IDishesRepository {
 
       throw err;
     }
+  }
+
+  async saveLike({ userId, dishId }: IAddLike): Promise<void> {
+    await this.prisma.dish.update({
+      where: {
+        id: dishId,
+      },
+      data: {
+        favoritedBy: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
   }
 }
 
