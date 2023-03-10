@@ -3,7 +3,7 @@ import { hash } from "bcryptjs";
 
 import IUsersRepository, {
   ICreateUserParams,
-} from "../repositories/IUsersRepositoryInterface";
+} from "../repositories/IUsersRepository";
 
 class UsersService {
   constructor(private userRepository: IUsersRepository) {}

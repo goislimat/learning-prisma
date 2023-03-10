@@ -3,7 +3,7 @@ import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 
 import jwt from "../config/auth";
-import IUsersRepository from "../repositories/IUsersRepositoryInterface";
+import IUsersRepository from "../repositories/IUsersRepository";
 import HandledError from "../utils/HandledError";
 
 interface UserParams {

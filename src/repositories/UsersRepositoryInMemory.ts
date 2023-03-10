@@ -1,9 +1,7 @@
 import { User } from "@prisma/client";
 import { hashSync } from "bcryptjs";
 import HandledError from "../utils/HandledError";
-import IUsersRepository, {
-  ICreateUserParams,
-} from "./IUsersRepositoryInterface";
+import IUsersRepository, { ICreateUserParams } from "./IUsersRepository";
 
 class UsersRepositoryInMemory implements IUsersRepository {
   public users: User[] = [

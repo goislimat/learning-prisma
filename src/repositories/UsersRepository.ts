@@ -1,8 +1,6 @@
 import { Prisma, PrismaClient, User } from "@prisma/client";
 import HandledError from "../utils/HandledError";
-import IUsersRepository, {
-  ICreateUserParams,
-} from "./IUsersRepositoryInterface";
+import IUsersRepository, { ICreateUserParams } from "./IUsersRepository";
 
 class UsersRepository implements IUsersRepository {
   private prisma = new PrismaClient();
