@@ -15,6 +15,7 @@ export interface IDishWithIngredients extends Dish {
 
 interface IDishesRepository {
   findAll(): Promise<IDishWithIngredients[]>;
+  findById(id: number): Promise<IDishWithIngredients>;
   save(data: ICreateDishParams): Promise<IDishWithIngredients>;
 }
 
