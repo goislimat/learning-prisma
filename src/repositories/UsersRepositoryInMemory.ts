@@ -1,5 +1,6 @@
 import { User } from "@prisma/client";
 import { hashSync } from "bcryptjs";
+import HandledError from "../utils/HandledError";
 import IUsersRepository, { ICreateUserParams } from "./IUsersRepository";
 
 class UsersRepositoryInMemory implements IUsersRepository {
@@ -23,10 +24,9 @@ class UsersRepositoryInMemory implements IUsersRepository {
         resolve(userExists);
       }
 
-      reject({
-        statusCode: 404,
-        message: "This email/password combination is not valid",
-      });
+      reject(
+        new HandledError("This email/password combination is not valid", 404)
+      );
     });
 
     return user;
@@ -37,7 +37,7 @@ class UsersRepositoryInMemory implements IUsersRepository {
       const userAlreadyExists = this.users.find((user) => user.email === email);
 
       if (userAlreadyExists) {
-        reject({ statusCode: 400, message: "This email is already taken" });
+        reject(new HandledError("This email is already taken", 400));
       }
 
       const newUser: User = {

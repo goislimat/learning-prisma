@@ -8,6 +8,7 @@ const router = Router();
 const dishesController = new DishesController();
 
 router.get("/", ensureAuthenticated, dishesController.index);
+router.get("/:id", ensureAuthenticated, dishesController.show);
 router.post(
   "/",
   ensureAuthenticated,

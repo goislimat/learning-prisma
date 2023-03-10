@@ -14,6 +14,17 @@ class DishesController {
     return res.json(dishes);
   }
 
+  async show(req: Request, res: Response) {
+    const { id } = req.params;
+
+    const dishesRepository = new DishesRepository();
+    const dishesService = new DishesService(dishesRepository);
+
+    const dish = await dishesService.getDishById(id);
+
+    return res.json(dish);
+  }
+
   async create(req: Request, res: Response) {
     const { name, category, ingredients, description, price } = req.body;
     const filename = req.file?.filename;

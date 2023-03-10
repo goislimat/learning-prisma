@@ -35,6 +35,13 @@ class DishesService {
     return dishes.map((dish) => this.getFormattedDish(dish));
   }
 
+  async getDishById(idAsString: string): Promise<any> {
+    const id = Number(idAsString);
+
+    const dish = await this.dishesRepository.findById(id);
+    return this.getFormattedDish(dish);
+  }
+
   async createDish({
     name,
     category,

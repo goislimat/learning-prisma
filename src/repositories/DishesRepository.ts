@@ -18,6 +18,26 @@ class DishesRepository implements IDishesRepository {
     return dishes;
   }
 
+  async findById(id: number): Promise<IDishWithIngredients> {
+    try {
+      const dish = await this.prisma.dish.findFirstOrThrow({
+        where: {
+          id,
+        },
+        include: {
+          ingredients: true,
+        },
+      });
+
+      return dish;
+    } catch {
+      throw new HandledError(
+        `Could not find a dish record with id: ${id}`,
+        404
+      );
+    }
+  }
+
   async save({
     image,
     name,
