@@ -1,7 +1,9 @@
 import { User } from "@prisma/client";
 import { hashSync } from "bcryptjs";
 import HandledError from "../utils/HandledError";
-import IUsersRepository, { ICreateUserParams } from "./IUsersRepository";
+import IUsersRepository, {
+  ICreateUserParams,
+} from "./IUsersRepositoryInterface";
 
 class UsersRepositoryInMemory implements IUsersRepository {
   public users: User[] = [
@@ -16,9 +18,23 @@ class UsersRepositoryInMemory implements IUsersRepository {
     },
   ];
 
+  async findById(id: number): Promise<User> {
+    const user: Promise<User> = new Promise((resolve, reject) => {
+      const userExists = this.users.find((u) => u.id === id);
+
+      if (userExists) {
+        resolve(userExists);
+      }
+
+      reject();
+    });
+
+    return user;
+  }
+
   async findByEmail(email: string): Promise<User> {
     const user: Promise<User> = new Promise((resolve, reject) => {
-      const userExists = this.users.find((user) => user.email === email);
+      const userExists = this.users.find((u) => u.email === email);
 
       if (userExists) {
         resolve(userExists);
