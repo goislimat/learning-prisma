@@ -1,5 +1,5 @@
 import IDishesRepository, {
-  IDishWithIngredients,
+  IDishWithIngredientsAndUser,
 } from "../repositories/IDishesRepository";
 import HandledError from "../utils/HandledError";
 import DiskStorageService from "./DiskStorageService";
@@ -94,7 +94,7 @@ class DishesService {
     return Number(price.replace(/\D/g, ""));
   }
 
-  private getFormattedDish(dish: IDishWithIngredients): IFormattedDish {
+  private getFormattedDish(dish: IDishWithIngredientsAndUser): IFormattedDish {
     return {
       ...dish,
       ingredients: dish.ingredients.map((ingredient) => ingredient.name),

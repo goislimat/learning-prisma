@@ -1,4 +1,4 @@
-import { Dish, Ingredient, Prisma, User } from "@prisma/client";
+import { Dish, Ingredient, User } from "@prisma/client";
 
 export interface ICreateDishParams {
   image: string;
@@ -23,54 +23,16 @@ export interface IDishWithIngredientsAndUser {
     id: User["id"];
   }[];
 }
-export interface IDishWithIngredients extends Dish {
-  ingredients: Ingredient[];
-}
 
 export interface IAddLike {
   userId: number;
   dishId: number;
 }
 
-const dishSelect = Prisma.validator<Prisma.DishSelect>()({
-  id: true,
-  image: true,
-  name: true,
-  category: true,
-  price: true,
-  description: true,
-  ingredients: {
-    select: {
-      name: true,
-    },
-  },
-  favoritedBy: {
-    select: {
-      id: true,
-    },
-  },
-});
-
-export const addUserLikedDish = (userId: number, dishId: number) => {
-  return Prisma.validator<Prisma.DishUpdateArgs>()({
-    where: {
-      id: dishId,
-    },
-    data: {
-      favoritedBy: {
-        connect: {
-          id: userId,
-        },
-      },
-    },
-    select: dishSelect,
-  });
-};
-
 interface IDishesRepository {
-  findAll(): Promise<IDishWithIngredients[]>;
-  findById(id: number): Promise<IDishWithIngredients>;
-  save(data: ICreateDishParams): Promise<IDishWithIngredients>;
+  findAll(): Promise<IDishWithIngredientsAndUser[]>;
+  findById(id: number): Promise<IDishWithIngredientsAndUser>;
+  save(data: ICreateDishParams): Promise<IDishWithIngredientsAndUser>;
   saveLike(data: IAddLike): Promise<IDishWithIngredientsAndUser>;
 }
 
