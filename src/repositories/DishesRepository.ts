@@ -1,9 +1,11 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import HandledError from "../utils/HandledError";
 import IDishesRepository, {
+  addUserLikedDish,
   IAddLike,
   ICreateDishParams,
   IDishWithIngredients,
+  IDishWithIngredientsAndUser,
 } from "./IDishesRepository";
 
 class DishesRepository implements IDishesRepository {
@@ -84,19 +86,22 @@ class DishesRepository implements IDishesRepository {
     }
   }
 
-  async saveLike({ userId, dishId }: IAddLike): Promise<void> {
-    await this.prisma.dish.update({
-      where: {
-        id: dishId,
-      },
-      data: {
-        favoritedBy: {
-          connect: {
-            id: userId,
-          },
-        },
-      },
-    });
+  async saveLike({
+    userId,
+    dishId,
+  }: IAddLike): Promise<IDishWithIngredientsAndUser> {
+    try {
+      const dish = await this.prisma.dish.update(
+        addUserLikedDish(userId, dishId)
+      );
+
+      return dish;
+    } catch {
+      throw new HandledError(
+        `Unable to favorite dish ${dishId} for user ${userId}`,
+        422
+      );
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import HandledError from "../utils/HandledError";
 import IDishesRepository, {
+  IAddLike,
   ICreateDishParams,
   IDishWithIngredients,
 } from "./IDishesRepository";
@@ -34,6 +35,11 @@ class DishesRepositoryInMemory implements IDishesRepository {
           name: "bacon",
           createdAt: new Date(Date.now()),
           updatedAt: new Date(Date.now()),
+        },
+      ],
+      favoritedBy: [
+        {
+          id: 2,
         },
       ],
     },
@@ -90,6 +96,10 @@ class DishesRepositoryInMemory implements IDishesRepository {
     );
 
     return dishWithIngredients;
+  }
+
+  async saveLike({ userId, dishId }: IAddLike): Promise<boolean> {
+    const liked = new Promise((resolve, reject) => {});
   }
 }
 

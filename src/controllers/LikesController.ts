@@ -9,7 +9,7 @@ class LikesController {
 
     const dishesRepository = new DishesRepository();
     const likesService = new DishLikesService(dishesRepository);
-    likesService.like({ userId, dishId });
+    await likesService.like({ userId, dishId });
 
     return res.status(201).json();
   }

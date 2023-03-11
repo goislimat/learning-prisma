@@ -1,4 +1,6 @@
-import IDishesRepository from "../repositories/IDishesRepository";
+import IDishesRepository, {
+  IDishWithIngredientsAndUser,
+} from "../repositories/IDishesRepository";
 
 interface LikeParams {
   userId: number;
@@ -8,10 +10,14 @@ interface LikeParams {
 class DishLikesService {
   constructor(private dishesRepository: IDishesRepository) {}
 
-  async like({ userId, dishId }: LikeParams): Promise<void> {
+  async like({
+    userId,
+    dishId,
+  }: LikeParams): Promise<IDishWithIngredientsAndUser> {
     const id = Number(dishId);
+    const dish = await this.dishesRepository.saveLike({ userId, dishId: id });
 
-    await this.dishesRepository.saveLike({ userId, dishId: id });
+    return dish;
   }
 }
 
