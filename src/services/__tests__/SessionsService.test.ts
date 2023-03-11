@@ -1,5 +1,5 @@
-import UsersRepositoryInMemory from "../repositories/UsersRepositoryInMemory";
-import SessionsService from "./SessionsService";
+import UsersRepositoryInMemory from "../../repositories/UsersRepositoryInMemory";
+import SessionsService from "../SessionsService";
 
 describe("SessionsService", () => {
   it("should create a session", async () => {

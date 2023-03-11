@@ -1,6 +1,6 @@
 import { compare } from "bcryptjs";
-import UsersRepositoryInMemory from "../repositories/UsersRepositoryInMemory";
-import UsersService from "./UsersService";
+import UsersRepositoryInMemory from "../../repositories/UsersRepositoryInMemory";
+import UsersService from "../UsersService";
 
 describe("UsersSevice", () => {
   it("should create a user", async () => {

@@ -1,8 +1,8 @@
-import DishesRepositoryInMemory from "../repositories/DishesRepositoryInMemory";
-import DishesService from "./DishesService";
-import DiskStorageService from "./DiskStorageService";
+import DishesRepositoryInMemory from "../../repositories/DishesRepositoryInMemory";
+import DishesService from "../DishesService";
+import DiskStorageService from "../DiskStorageService";
 
-jest.mock("./DiskStorageService");
+jest.mock("../DiskStorageService");
 
 describe("DishesService", () => {
   it("should be able to create a new dish", async () => {
