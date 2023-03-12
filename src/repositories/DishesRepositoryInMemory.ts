@@ -1,8 +1,11 @@
+import { z } from "zod";
+
 import HandledError from "../utils/HandledError";
 import IDishesRepository, {
   ICreateDishParams,
   IDishWithIngredientsAndUser,
   ILikeUpdate,
+  IUpdateDishParams,
 } from "./IDishesRepository";
 
 class DishesRepositoryInMemory implements IDishesRepository {
@@ -76,6 +79,63 @@ class DishesRepositoryInMemory implements IDishesRepository {
       });
 
     return dishWithIngredients;
+  }
+
+  async update(data: IUpdateDishParams): Promise<IDishWithIngredientsAndUser> {
+    const dish: Promise<IDishWithIngredientsAndUser> = new Promise(
+      (resolve, reject) => {
+        const dish = this.dishes.find((d) => d.id === data.id);
+
+        if (dish) {
+          const ingredients = [
+            ...dish.ingredients,
+            ...data.ingredientsToAdd.map((ingredient) => ({
+              name: ingredient,
+            })),
+          ].filter(
+            (ingredient) => !data.ingredientsToRemove.includes(ingredient.name)
+          );
+
+          const updatedDish = {
+            ...dish,
+            image: data.image || dish.image,
+            name: data.name,
+            description: data.description,
+            price: data.price,
+            category: data.category,
+            ingredients,
+          };
+
+          const DishSchema = z.object({
+            id: z.number(),
+            image: z.string().nonempty(),
+            name: z.string().nonempty(),
+            category: z.string().nonempty(),
+            price: z.number(),
+            description: z.string().nonempty(),
+            ingredients: z.array(z.object({ name: z.string() })).nonempty(),
+            favoritedBy: z.array(z.object({ id: z.number() })),
+          });
+
+          try {
+            DishSchema.parse(updatedDish);
+          } catch {
+            reject(
+              new HandledError(
+                "The record could not be updated with the provided data",
+                400
+              )
+            );
+          }
+
+          resolve(updatedDish);
+        }
+
+        reject(new HandledError("Dish not found", 404));
+      }
+    );
+
+    return dish;
   }
 
   async saveLike({

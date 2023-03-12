@@ -86,6 +86,119 @@ describe("DishesService", () => {
     expect(deleteFileSpy).toHaveBeenCalledWith(dishFields.image);
   });
 
+  it("should be able to update a dish", async () => {
+    const diskStorageService = new DiskStorageService();
+    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
+    const dishesService = new DishesService(
+      dishesRepositoryInMemory,
+      diskStorageService
+    );
+
+    // id: 1,
+    //   image: "1678369738935-756807316-carbonara.webp",
+    //   name: "Spaghetti alla Carbonara",
+    //   category: "meal",
+    //   price: 1999,
+    //   description:
+    //     "Spaghetti made on bacon fat with spices and decorated with bacon cubes and grated cheese",
+    //   ingredients: [
+    //     {
+    //       name: "pasta",
+    //     },
+    //     {
+    //       name: "cheese",
+    //     },
+    //     {
+    //       name: "bacon",
+    //     },
+    //   ],
+
+    const currentDish = await dishesService.getDishById("1");
+
+    expect(currentDish).toEqual({
+      id: 1,
+      name: "Spaghetti alla Carbonara",
+      category: "meal",
+      price: 1999,
+      description:
+        "Spaghetti made on bacon fat with spices and decorated with bacon cubes and grated cheese",
+      ingredients: ["pasta", "cheese", "bacon"],
+      image: "1678369738935-756807316-carbonara.webp",
+      favoritedBy: [],
+    });
+
+    const dishFields = {
+      name: "Rice and Beans",
+      category: "meal",
+      ingredients: "rice,beans",
+      description: "Plain and simple rice and beans",
+      price: "R$ 9,99",
+      image: "rice-and-beans.jpg",
+    };
+
+    const saveFileSpy = jest.spyOn(diskStorageService, "saveFile");
+    const deleteFileSpy = jest.spyOn(diskStorageService, "deleteFile");
+
+    const updatedDish = await dishesService.updateDish("1", dishFields);
+
+    expect(saveFileSpy).toHaveBeenCalledWith(dishFields.image);
+    expect(deleteFileSpy).toHaveBeenCalledWith(currentDish.image);
+
+    expect(updatedDish).toEqual({
+      id: 1,
+      name: "Rice and Beans",
+      category: "meal",
+      price: 999,
+      description: "Plain and simple rice and beans",
+      ingredients: ["rice", "beans"],
+      image: "rice-and-beans.jpg",
+      favoritedBy: [],
+    });
+  });
+
+  it("should rollback the image if the dish update fails", async () => {
+    const diskStorageService = new DiskStorageService();
+    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
+    const dishesService = new DishesService(
+      dishesRepositoryInMemory,
+      diskStorageService
+    );
+
+    const currentDish = await dishesService.getDishById("1");
+
+    expect(currentDish).toEqual({
+      id: 1,
+      name: "Spaghetti alla Carbonara",
+      category: "meal",
+      price: 1999,
+      description:
+        "Spaghetti made on bacon fat with spices and decorated with bacon cubes and grated cheese",
+      ingredients: ["pasta", "cheese", "bacon"],
+      image: "1678369738935-756807316-carbonara.webp",
+      favoritedBy: [],
+    });
+
+    const dishFields = {
+      name: "Rice and Beans",
+      category: "meal",
+      ingredients: "rice,beans",
+      description: "",
+      price: "R$ 9,99",
+      image: "rice-and-beans.jpg",
+    };
+
+    const saveFileSpy = jest.spyOn(diskStorageService, "saveFile");
+    const deleteFileSpy = jest.spyOn(diskStorageService, "deleteFile");
+
+    await expect(dishesService.updateDish("1", dishFields)).rejects.toEqual({
+      statusCode: 400,
+      message: "The record could not be updated with the provided data",
+    });
+
+    expect(saveFileSpy).toHaveBeenCalledWith(dishFields.image);
+    expect(deleteFileSpy).toHaveBeenCalledWith(dishFields.image, true);
+  });
+
   it("should be able to return all dishes", async () => {
     const dishesRepositoryInMemory = new DishesRepositoryInMemory();
     const dishesService = new DishesService(dishesRepositoryInMemory);

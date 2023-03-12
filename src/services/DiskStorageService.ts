@@ -12,8 +12,9 @@ class DiskStorageService {
     );
   }
 
-  async deleteFile(file: string): Promise<void> {
-    const filePath = path.resolve(UPLOADS_FOLDER, file);
+  async deleteFile(file: string, rollback = false): Promise<void> {
+    const folder = rollback ? TMP_FOLDER : UPLOADS_FOLDER;
+    const filePath = path.resolve(folder, file);
 
     await fs.unlink(filePath, (err) => {
       if (err) {

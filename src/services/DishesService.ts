@@ -21,6 +21,7 @@ interface IFormattedDish {
   description: string;
   price: number;
   image: string;
+  favoritedBy: number[];
 }
 
 class DishesService {
@@ -140,6 +141,7 @@ class DishesService {
     return {
       ...dish,
       ingredients: dish.ingredients.map((ingredient) => ingredient.name),
+      favoritedBy: dish.favoritedBy.map((user) => user.id),
     };
   }
 
@@ -174,7 +176,7 @@ class DishesService {
       return {
         update: () => this.diskStorageService.saveFile(newImage),
         deletePrevious: () => this.diskStorageService.deleteFile(oldImage),
-        rollback: () => this.diskStorageService.deleteFile(newImage),
+        rollback: () => this.diskStorageService.deleteFile(newImage, true),
       };
     }
 
