@@ -1,9 +1,7 @@
-import { User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { hash } from "bcryptjs";
 
-import IUsersRepository, {
-  ICreateUserParams,
-} from "../repositories/IUsersRepository";
+import IUsersRepository, { User } from "../repositories/IUsersRepository";
 
 class UsersService {
   constructor(private userRepository: IUsersRepository) {}
@@ -18,7 +16,7 @@ class UsersService {
     name,
     email,
     password,
-  }: ICreateUserParams): Promise<User> {
+  }: Prisma.UserCreateInput): Promise<User> {
     const hashedPassword = await hash(password, 8);
 
     const user = await this.userRepository.save({

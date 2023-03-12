@@ -1,32 +1,20 @@
-import { Prisma, PrismaClient, User } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import HandledError from "../utils/HandledError";
-import IUsersRepository, { ICreateUserParams } from "./IUsersRepository";
+import IUsersRepository, { User } from "./IUsersRepository";
+import { createUser, findByEmail, findById } from "./validators/user";
 
 class UsersRepository implements IUsersRepository {
   private prisma = new PrismaClient();
 
   async findById(id: number): Promise<User> {
-    try {
-      const user = await this.prisma.user.findFirstOrThrow({
-        where: {
-          id,
-        },
-      });
+    const user = await this.prisma.user.findFirstOrThrow(findById(id));
 
-      return user;
-    } catch (err) {
-      // TODO tests this in a way we can see the error that is being thrown
-      throw err;
-    }
+    return user;
   }
 
   async findByEmail(email: string): Promise<User> {
     try {
-      const user = await this.prisma.user.findUniqueOrThrow({
-        where: {
-          email,
-        },
-      });
+      const user = await this.prisma.user.findUniqueOrThrow(findByEmail(email));
 
       return user;
     } catch (err) {
@@ -43,15 +31,9 @@ class UsersRepository implements IUsersRepository {
     }
   }
 
-  async save({ name, email, password }: ICreateUserParams): Promise<User> {
+  async save(data: Prisma.UserCreateInput): Promise<User> {
     try {
-      const user = await this.prisma.user.create({
-        data: {
-          name,
-          email,
-          password,
-        },
-      });
+      const user = await this.prisma.user.create(createUser(data));
 
       return user;
     } catch (err) {

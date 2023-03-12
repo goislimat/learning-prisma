@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import DiskStorageService from "./DiskStorageService";
+import DiskStorageService from "../DiskStorageService";
 
 jest.mock("fs");
 jest.mock("path");

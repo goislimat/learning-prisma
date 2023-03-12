@@ -1,5 +1,5 @@
-import UsersRepositoryInMemory from "../repositories/UsersRepositoryInMemory";
-import SessionsService from "./SessionsService";
+import UsersRepositoryInMemory from "../../repositories/UsersRepositoryInMemory";
+import SessionsService from "../SessionsService";
 
 describe("SessionsService", () => {
   it("should create a session", async () => {
@@ -14,6 +14,7 @@ describe("SessionsService", () => {
     const [createdUser, token] = await sessionsService.create(user);
 
     expect(createdUser).toHaveProperty("id");
+    expect(createdUser).not.toHaveProperty("password");
     expect(token).not.toBeNull();
   });
 

@@ -1,7 +1,7 @@
-import { User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { hashSync } from "bcryptjs";
 import HandledError from "../utils/HandledError";
-import IUsersRepository, { ICreateUserParams } from "./IUsersRepository";
+import IUsersRepository, { User } from "./IUsersRepository";
 
 class UsersRepositoryInMemory implements IUsersRepository {
   public users: User[] = [
@@ -11,14 +11,26 @@ class UsersRepositoryInMemory implements IUsersRepository {
       email: "janedoe@example.com",
       password: hashSync("123456"),
       isAdmin: false,
-      createdAt: new Date("01/01/2023"),
-      updatedAt: new Date("01/01/2023"),
     },
   ];
 
+  async findById(id: number): Promise<User> {
+    const user: Promise<User> = new Promise((resolve, reject) => {
+      const userExists = this.users.find((u) => u.id === id);
+
+      if (userExists) {
+        resolve(userExists);
+      }
+
+      reject();
+    });
+
+    return user;
+  }
+
   async findByEmail(email: string): Promise<User> {
     const user: Promise<User> = new Promise((resolve, reject) => {
-      const userExists = this.users.find((user) => user.email === email);
+      const userExists = this.users.find((u) => u.email === email);
 
       if (userExists) {
         resolve(userExists);
@@ -32,7 +44,7 @@ class UsersRepositoryInMemory implements IUsersRepository {
     return user;
   }
 
-  async save({ name, email, password }: ICreateUserParams): Promise<User> {
+  async save({ name, email, password }: Prisma.UserCreateInput): Promise<User> {
     const createdUser: Promise<User> = new Promise((resolve, reject) => {
       const userAlreadyExists = this.users.find((user) => user.email === email);
 
@@ -46,8 +58,6 @@ class UsersRepositoryInMemory implements IUsersRepository {
         email,
         password,
         isAdmin: false,
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
       };
 
       this.users.push(newUser);

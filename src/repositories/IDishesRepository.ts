@@ -1,4 +1,4 @@
-import { Dish, Ingredient } from "@prisma/client";
+import { Dish, Ingredient, User } from "@prisma/client";
 
 export interface ICreateDishParams {
   image: string;
@@ -9,14 +9,32 @@ export interface ICreateDishParams {
   price: number;
 }
 
-export interface IDishWithIngredients extends Dish {
-  ingredients: Ingredient[];
+export interface IDishWithIngredientsAndUser {
+  id: Dish["id"];
+  image: Dish["image"];
+  name: Dish["name"];
+  category: Dish["category"];
+  description: Dish["description"];
+  price: Dish["price"];
+  ingredients: {
+    name: Ingredient["name"];
+  }[];
+  favoritedBy: {
+    id: User["id"];
+  }[];
+}
+
+export interface ILikeUpdate {
+  userId: number;
+  dishId: number;
 }
 
 interface IDishesRepository {
-  findAll(): Promise<IDishWithIngredients[]>;
-  findById(id: number): Promise<IDishWithIngredients>;
-  save(data: ICreateDishParams): Promise<IDishWithIngredients>;
+  findAll(): Promise<IDishWithIngredientsAndUser[]>;
+  findById(id: number): Promise<IDishWithIngredientsAndUser>;
+  save(data: ICreateDishParams): Promise<IDishWithIngredientsAndUser>;
+  saveLike(data: ILikeUpdate): Promise<IDishWithIngredientsAndUser>;
+  removeLike(data: ILikeUpdate): Promise<IDishWithIngredientsAndUser>;
 }
 
 export default IDishesRepository;
