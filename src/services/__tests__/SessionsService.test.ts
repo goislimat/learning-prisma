@@ -14,6 +14,7 @@ describe("SessionsService", () => {
     const [createdUser, token] = await sessionsService.create(user);
 
     expect(createdUser).toHaveProperty("id");
+    expect(createdUser).not.toHaveProperty("password");
     expect(token).not.toBeNull();
   });
 
