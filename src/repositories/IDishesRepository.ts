@@ -9,6 +9,17 @@ export interface ICreateDishParams {
   price: number;
 }
 
+export interface IUpdateDishParams {
+  id: number;
+  image: string;
+  name: string;
+  category: string;
+  ingredientsToAdd: string[];
+  ingredientsToRemove: string[];
+  description: string;
+  price: number;
+}
+
 export interface IDishWithIngredientsAndUser {
   id: Dish["id"];
   image: Dish["image"];
@@ -33,6 +44,7 @@ interface IDishesRepository {
   findAll(): Promise<IDishWithIngredientsAndUser[]>;
   findById(id: number): Promise<IDishWithIngredientsAndUser>;
   save(data: ICreateDishParams): Promise<IDishWithIngredientsAndUser>;
+  update(data: IUpdateDishParams): Promise<IDishWithIngredientsAndUser>;
   saveLike(data: ILikeUpdate): Promise<IDishWithIngredientsAndUser>;
   removeLike(data: ILikeUpdate): Promise<IDishWithIngredientsAndUser>;
 }

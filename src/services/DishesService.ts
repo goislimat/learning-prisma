@@ -77,6 +77,48 @@ class DishesService {
     }
   }
 
+  async updateDish(
+    idAsString: string,
+    { name, category, ingredients, description, price, image }: IDishFields
+  ): Promise<IFormattedDish> {
+    const id = Number(idAsString);
+    const dish = await this.dishesRepository.findById(id);
+
+    if (!dish) {
+      throw new HandledError("Dish not found", 404);
+    }
+
+    const storedImage = this.updateImage(image, dish.image);
+    const priceNumber = this.getPriceAsNumber(price);
+    const [ingredientsToAdd, ingredientsToRemove] = this.getIngredientsToUpdate(
+      dish.ingredients,
+      ingredients
+    );
+
+    try {
+      await storedImage.update();
+
+      const updatedDish = await this.dishesRepository.update({
+        id,
+        image: image || dish.image,
+        name,
+        category,
+        price: priceNumber,
+        description,
+        ingredientsToAdd,
+        ingredientsToRemove,
+      });
+
+      await storedImage.deletePrevious();
+
+      return this.getFormattedDish(updatedDish);
+    } catch (err) {
+      await storedImage.rollback();
+
+      throw err;
+    }
+  }
+
   private getIngredientsArray(ingredients: string): string[] {
     const ingredientsArray = ingredients
       .split(",")
@@ -98,6 +140,48 @@ class DishesService {
     return {
       ...dish,
       ingredients: dish.ingredients.map((ingredient) => ingredient.name),
+    };
+  }
+
+  private getIngredientsToUpdate(
+    previousIngredients: { name: string }[],
+    newIngredients: string
+  ): [string[], string[]] {
+    const previousIngredientsArray = previousIngredients.map(
+      (ingredient) => ingredient.name
+    );
+    const newIngredientsArray = this.getIngredientsArray(newIngredients);
+
+    const ingredientsToRemove = previousIngredientsArray.filter(
+      (ingredient) => !newIngredientsArray.includes(ingredient)
+    );
+    const ingredientsToAdd = newIngredientsArray.filter(
+      (ingredient) => !previousIngredientsArray.includes(ingredient)
+    );
+
+    return [ingredientsToAdd, ingredientsToRemove];
+  }
+
+  private updateImage(
+    newImage: string | undefined,
+    oldImage: string
+  ): {
+    update: () => Promise<void>;
+    deletePrevious: () => Promise<void>;
+    rollback: () => Promise<void>;
+  } {
+    if (newImage) {
+      return {
+        update: () => this.diskStorageService.saveFile(newImage),
+        deletePrevious: () => this.diskStorageService.deleteFile(oldImage),
+        rollback: () => this.diskStorageService.deleteFile(newImage),
+      };
+    }
+
+    return {
+      update: () => Promise.resolve(),
+      deletePrevious: () => Promise.resolve(),
+      rollback: () => Promise.resolve(),
     };
   }
 }

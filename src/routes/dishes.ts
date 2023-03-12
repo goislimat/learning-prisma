@@ -17,5 +17,6 @@ router.post(
   upload.single("image"),
   dishesController.create
 );
+router.put("/:id", ensureAuthenticated, ensureAdmin, dishesController.update);
 
 export default router;
