@@ -24,7 +24,7 @@ export interface IDishWithIngredientsAndUser {
   }[];
 }
 
-export interface IAddLike {
+export interface ILikeUpdate {
   userId: number;
   dishId: number;
 }
@@ -33,7 +33,8 @@ interface IDishesRepository {
   findAll(): Promise<IDishWithIngredientsAndUser[]>;
   findById(id: number): Promise<IDishWithIngredientsAndUser>;
   save(data: ICreateDishParams): Promise<IDishWithIngredientsAndUser>;
-  saveLike(data: IAddLike): Promise<IDishWithIngredientsAndUser>;
+  saveLike(data: ILikeUpdate): Promise<IDishWithIngredientsAndUser>;
+  removeLike(data: ILikeUpdate): Promise<IDishWithIngredientsAndUser>;
 }
 
 export default IDishesRepository;

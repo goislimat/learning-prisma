@@ -1,8 +1,8 @@
 import HandledError from "../utils/HandledError";
 import IDishesRepository, {
-  IAddLike,
   ICreateDishParams,
   IDishWithIngredientsAndUser,
+  ILikeUpdate,
 } from "./IDishesRepository";
 
 class DishesRepositoryInMemory implements IDishesRepository {
@@ -81,7 +81,7 @@ class DishesRepositoryInMemory implements IDishesRepository {
   async saveLike({
     userId,
     dishId,
-  }: IAddLike): Promise<IDishWithIngredientsAndUser> {
+  }: ILikeUpdate): Promise<IDishWithIngredientsAndUser> {
     const dish: Promise<IDishWithIngredientsAndUser> = new Promise(
       (resolve, reject) => {
         const dish = this.dishes.find((d) => d.id === dishId);
@@ -95,6 +95,32 @@ class DishesRepositoryInMemory implements IDishesRepository {
         reject(
           new HandledError(
             `Unable to favorite dish ${dishId} for user ${userId}`,
+            422
+          )
+        );
+      }
+    );
+
+    return dish;
+  }
+
+  async removeLike({
+    userId,
+    dishId,
+  }: ILikeUpdate): Promise<IDishWithIngredientsAndUser> {
+    const dish: Promise<IDishWithIngredientsAndUser> = new Promise(
+      (resolve, reject) => {
+        const dish = this.dishes.find((d) => d.id === dishId);
+
+        if (dish) {
+          dish.favoritedBy = dish.favoritedBy.filter((u) => u.id !== userId);
+
+          resolve(dish);
+        }
+
+        reject(
+          new HandledError(
+            `Unable to unfavorite dish ${dishId} for user ${userId}`,
             422
           )
         );

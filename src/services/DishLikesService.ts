@@ -19,6 +19,16 @@ class DishLikesService {
 
     return dish;
   }
+
+  async dislike({
+    userId,
+    dishId,
+  }: LikeParams): Promise<IDishWithIngredientsAndUser> {
+    const id = Number(dishId);
+    const dish = await this.dishesRepository.removeLike({ userId, dishId: id });
+
+    return dish;
+  }
 }
 
 export default DishLikesService;

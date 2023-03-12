@@ -7,5 +7,6 @@ const router = Router();
 const likesController = new LikesController();
 
 router.post("/:dishId", ensureAuthenticated, likesController.create);
+router.delete("/dishId", ensureAuthenticated, likesController.delete);
 
 export default router;

@@ -73,3 +73,19 @@ export function like(userId: number, dishId: number) {
     select,
   });
 }
+
+export function dislike(userId: number, dishId: number) {
+  return Prisma.validator<Prisma.DishUpdateArgs>()({
+    where: {
+      id: dishId,
+    },
+    data: {
+      favoritedBy: {
+        disconnect: {
+          id: userId,
+        },
+      },
+    },
+    select,
+  });
+}
