@@ -58,6 +58,44 @@ export function createDishWithIngredients(
   });
 }
 
+export function updateDishWithIngredients(
+  id: number,
+  image: string,
+  name: string,
+  category: string,
+  price: number,
+  description: string,
+  ingredientsToAdd: string[],
+  ingredientsToRemove: string[]
+) {
+  return Prisma.validator<Prisma.DishUpdateArgs>()({
+    where: {
+      id,
+    },
+    data: {
+      image,
+      name,
+      category,
+      price,
+      description,
+      ingredients: {
+        connectOrCreate: ingredientsToAdd.map((ingredient) => ({
+          create: {
+            name: ingredient,
+          },
+          where: {
+            name: ingredient,
+          },
+        })),
+        disconnect: ingredientsToRemove.map((ingredient) => ({
+          name: ingredient,
+        })),
+      },
+    },
+    select,
+  });
+}
+
 export function like(userId: number, dishId: number) {
   return Prisma.validator<Prisma.DishUpdateArgs>()({
     where: {

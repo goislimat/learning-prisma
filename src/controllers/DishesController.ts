@@ -46,6 +46,29 @@ class DishesController {
 
     return res.status(201).json(dish);
   }
+
+  async update(req: Request, res: Response) {
+    const { id } = req.params;
+    const { name, category, ingredients, description, price } = req.body;
+    const filename = req.file?.filename;
+
+    const diskStorageService = new DiskStorageService();
+    const dishesRepository = new DishesRepository();
+    const dishesService = new DishesService(
+      dishesRepository,
+      diskStorageService
+    );
+    const dish = await dishesService.updateDish(id, {
+      name,
+      category,
+      ingredients,
+      description,
+      price,
+      image: filename,
+    });
+
+    return res.json(dish);
+  }
 }
 
 export default DishesController;

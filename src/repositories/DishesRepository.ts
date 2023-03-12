@@ -4,6 +4,7 @@ import IDishesRepository, {
   ICreateDishParams,
   IDishWithIngredientsAndUser,
   ILikeUpdate,
+  IUpdateDishParams,
 } from "./IDishesRepository";
 import {
   createDishWithIngredients,
@@ -11,6 +12,7 @@ import {
   findById,
   like,
   select,
+  updateDishWithIngredients,
 } from "./validators/dish";
 
 class DishesRepository implements IDishesRepository {
@@ -60,6 +62,43 @@ class DishesRepository implements IDishesRepository {
       if (err instanceof Prisma.PrismaClientValidationError) {
         throw new HandledError(
           "A new record could not be created with the provided data",
+          400
+        );
+      }
+
+      throw err;
+    }
+  }
+
+  async update({
+    id,
+    image,
+    name,
+    category,
+    ingredientsToAdd,
+    ingredientsToRemove,
+    price,
+    description,
+  }: IUpdateDishParams): Promise<IDishWithIngredientsAndUser> {
+    try {
+      const updatedDish = await this.prisma.dish.update(
+        updateDishWithIngredients(
+          id,
+          image,
+          name,
+          category,
+          price,
+          description,
+          ingredientsToAdd,
+          ingredientsToRemove
+        )
+      );
+
+      return updatedDish;
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientValidationError) {
+        throw new HandledError(
+          "The record could not be updated with the provided data",
           400
         );
       }
