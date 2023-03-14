@@ -9,7 +9,7 @@ interface IDishFields {
   category: string;
   ingredients: string;
   description: string;
-  price: string;
+  price: number;
   image?: string;
 }
 
@@ -36,10 +36,9 @@ class DishesService {
     return dishes.map((dish) => this.getFormattedDish(dish));
   }
 
-  async getDishById(idAsString: string): Promise<any> {
-    const id = Number(idAsString);
-
+  async getDishById(id: number): Promise<any> {
     const dish = await this.dishesRepository.findById(id);
+
     return this.getFormattedDish(dish);
   }
 
@@ -59,14 +58,13 @@ class DishesService {
       await this.diskStorageService.saveFile(image);
 
       const ingredientsArray = this.getIngredientsArray(ingredients);
-      const priceNumber = this.getPriceAsNumber(price);
 
       const dish = await this.dishesRepository.save({
         name,
         category,
         ingredients: ingredientsArray,
         description,
-        price: priceNumber,
+        price,
         image,
       });
 
@@ -79,10 +77,9 @@ class DishesService {
   }
 
   async updateDish(
-    idAsString: string,
+    id: number,
     { name, category, ingredients, description, price, image }: IDishFields
   ): Promise<IFormattedDish> {
-    const id = Number(idAsString);
     const dish = await this.dishesRepository.findById(id);
 
     if (!dish) {
@@ -90,7 +87,6 @@ class DishesService {
     }
 
     const storedImage = this.updateImage(image, dish.image);
-    const priceNumber = this.getPriceAsNumber(price);
     const [ingredientsToAdd, ingredientsToRemove] = this.getIngredientsToUpdate(
       dish.ingredients,
       ingredients
@@ -104,7 +100,7 @@ class DishesService {
         image: image || dish.image,
         name,
         category,
-        price: priceNumber,
+        price,
         description,
         ingredientsToAdd,
         ingredientsToRemove,
@@ -131,10 +127,6 @@ class DishesService {
     }
 
     return ingredientsArray;
-  }
-
-  private getPriceAsNumber(price: string): number {
-    return Number(price.replace(/\D/g, ""));
   }
 
   private getFormattedDish(dish: IDishWithIngredientsAndUser): IFormattedDish {
