@@ -6,7 +6,7 @@ describe("DishLikesService", () => {
     const dishesRepositoryInMemory = new DishesRepositoryInMemory();
     const dishLikesService = new DishLikesService(dishesRepositoryInMemory);
 
-    const dish = await dishLikesService.like({ userId: 2, dishId: "1" });
+    const dish = await dishLikesService.like({ userId: 2, dishId: 1 });
 
     expect(dish.favoritedBy).toHaveLength(1);
     expect(dish.favoritedBy[0].id).toBe(2);
@@ -17,7 +17,7 @@ describe("DishLikesService", () => {
     const dishLikesService = new DishLikesService(dishesRepositoryInMemory);
 
     await expect(
-      dishLikesService.like({ userId: 2, dishId: "2" })
+      dishLikesService.like({ userId: 2, dishId: 2 })
     ).rejects.toEqual({
       statusCode: 422,
       message: `Unable to favorite dish 2 for user 2`,
@@ -28,9 +28,9 @@ describe("DishLikesService", () => {
     const dishesRepositoryInMemory = new DishesRepositoryInMemory();
     const dishLikesService = new DishLikesService(dishesRepositoryInMemory);
 
-    await dishLikesService.like({ userId: 2, dishId: "1" });
+    await dishLikesService.like({ userId: 2, dishId: 1 });
 
-    const dish = await dishLikesService.dislike({ userId: 2, dishId: "1" });
+    const dish = await dishLikesService.dislike({ userId: 2, dishId: 1 });
 
     expect(dish.favoritedBy).toHaveLength(0);
   });
@@ -40,7 +40,7 @@ describe("DishLikesService", () => {
     const dishLikesService = new DishLikesService(dishesRepositoryInMemory);
 
     await expect(
-      dishLikesService.dislike({ userId: 2, dishId: "2" })
+      dishLikesService.dislike({ userId: 2, dishId: 2 })
     ).rejects.toEqual({
       statusCode: 422,
       message: `Unable to unfavorite dish 2 for user 2`,
