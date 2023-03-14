@@ -4,28 +4,20 @@ import IDishesRepository, {
 
 interface LikeParams {
   userId: number;
-  dishId: string;
+  dishId: number;
 }
 
 class DishLikesService {
   constructor(private dishesRepository: IDishesRepository) {}
 
-  async like({
-    userId,
-    dishId,
-  }: LikeParams): Promise<IDishWithIngredientsAndUser> {
-    const id = Number(dishId);
-    const dish = await this.dishesRepository.saveLike({ userId, dishId: id });
+  async like(params: LikeParams): Promise<IDishWithIngredientsAndUser> {
+    const dish = await this.dishesRepository.saveLike(params);
 
     return dish;
   }
 
-  async dislike({
-    userId,
-    dishId,
-  }: LikeParams): Promise<IDishWithIngredientsAndUser> {
-    const id = Number(dishId);
-    const dish = await this.dishesRepository.removeLike({ userId, dishId: id });
+  async dislike(params: LikeParams): Promise<IDishWithIngredientsAndUser> {
+    const dish = await this.dishesRepository.removeLike(params);
 
     return dish;
   }

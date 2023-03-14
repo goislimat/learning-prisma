@@ -1,8 +1,38 @@
 import { Request, Response } from "express";
+import { z } from "zod";
 
 import DishesRepository from "../repositories/DishesRepository";
 import DishesService from "../services/DishesService";
 import DiskStorageService from "../services/DiskStorageService";
+import zParse from "../utils/zParse";
+
+const DishParamsSchema = z.object({
+  params: z.object({
+    id: z.coerce.number(),
+  }),
+});
+
+const DishBodySchema = z.object({
+  body: z.object({
+    name: z.string().min(3).max(50),
+    category: z.string().min(3).max(50),
+    ingredients: z.string().min(3),
+    description: z.string().min(3),
+    price: z.coerce.number(),
+  }),
+});
+
+const DishFileSchema = z.object({
+  file: z.object({
+    filename: z.string().optional(),
+  }),
+});
+
+const DishCreateSchema = DishBodySchema.merge(DishFileSchema);
+
+const DishUpdateSchema = DishParamsSchema.merge(DishBodySchema).merge(
+  DishFileSchema.partial()
+);
 
 class DishesController {
   async index(req: Request, res: Response) {
@@ -15,7 +45,9 @@ class DishesController {
   }
 
   async show(req: Request, res: Response) {
-    const { id } = req.params;
+    const {
+      params: { id },
+    } = await zParse(DishParamsSchema, req);
 
     const dishesRepository = new DishesRepository();
     const dishesService = new DishesService(dishesRepository);
@@ -26,8 +58,15 @@ class DishesController {
   }
 
   async create(req: Request, res: Response) {
-    const { name, category, ingredients, description, price } = req.body;
-    const filename = req.file?.filename;
+    console.log({
+      body: req.body,
+      file: req.file,
+    });
+
+    const {
+      body: { name, category, description, ingredients, price },
+      file: { filename },
+    } = await zParse(DishCreateSchema, req);
 
     const diskStorageService = new DiskStorageService();
     const dishesRepository = new DishesRepository();
@@ -48,9 +87,12 @@ class DishesController {
   }
 
   async update(req: Request, res: Response) {
-    const { id } = req.params;
-    const { name, category, ingredients, description, price } = req.body;
-    const filename = req.file?.filename;
+    const {
+      params: { id },
+      body: { category, description, ingredients, name, price },
+      file,
+    } = await zParse(DishUpdateSchema, req);
+    const filename = file?.filename;
 
     const diskStorageService = new DiskStorageService();
     const dishesRepository = new DishesRepository();
