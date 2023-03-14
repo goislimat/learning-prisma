@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { User, UserCreateInput, UserWithoutPassword } from "../types/user";
 import HandledError from "../utils/HandledError";
-import IUsersRepository, { User } from "./IUsersRepository";
+import IUsersRepository from "./IUsersRepository";
 import { createUser, findByEmail, findById } from "./validators/user";
 
 class UsersRepository implements IUsersRepository {
@@ -31,7 +32,7 @@ class UsersRepository implements IUsersRepository {
     }
   }
 
-  async save(data: Prisma.UserCreateInput): Promise<User> {
+  async save(data: UserCreateInput): Promise<UserWithoutPassword> {
     try {
       const user = await this.prisma.user.create(createUser(data));
 

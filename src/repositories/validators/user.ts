@@ -1,13 +1,5 @@
 import { Prisma } from "@prisma/client";
 
-const select = Prisma.validator<Prisma.UserSelect>()({
-  id: true,
-  name: true,
-  email: true,
-  password: true,
-  isAdmin: true,
-});
-
 export function createUser({ name, email, password }: Prisma.UserCreateInput) {
   return Prisma.validator<Prisma.UserCreateArgs>()({
     data: {
@@ -15,7 +7,12 @@ export function createUser({ name, email, password }: Prisma.UserCreateInput) {
       email,
       password,
     },
-    select,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      isAdmin: true,
+    },
   });
 }
 
@@ -24,7 +21,13 @@ export function findById(id: number) {
     where: {
       id,
     },
-    select,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      password: true,
+      isAdmin: true,
+    },
   });
 }
 
@@ -33,6 +36,12 @@ export function findByEmail(email: string) {
     where: {
       email,
     },
-    select,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      password: true,
+      isAdmin: true,
+    },
   });
 }
