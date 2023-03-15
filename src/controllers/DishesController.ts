@@ -1,45 +1,26 @@
 import { Request, Response } from "express";
-import { z } from "zod";
 
 import DishesRepository from "../repositories/DishesRepository";
 import DishesService from "../services/DishesService";
 import DiskStorageService from "../services/DiskStorageService";
 import zParse from "../utils/zParse";
-
-const DishParamsSchema = z.object({
-  params: z.object({
-    id: z.coerce.number(),
-  }),
-});
-
-const DishBodySchema = z.object({
-  body: z.object({
-    name: z.string().min(3).max(50),
-    category: z.string().min(3).max(50),
-    ingredients: z.string().min(3),
-    description: z.string().min(3),
-    price: z.coerce.number(),
-  }),
-});
-
-const DishFileSchema = z.object({
-  file: z.object({
-    filename: z.string().optional(),
-  }),
-});
-
-const DishCreateSchema = DishBodySchema.merge(DishFileSchema);
-
-const DishUpdateSchema = DishParamsSchema.merge(DishBodySchema).merge(
-  DishFileSchema.partial()
-);
+import {
+  DishCreateSchema,
+  DishFetchAllSchema,
+  DishFetchOneSchema,
+  DishUpdateSchema,
+} from "./schemas/dish";
 
 class DishesController {
   async index(req: Request, res: Response) {
+    const {
+      user: { id: userId },
+    } = await zParse(DishFetchAllSchema, req);
+
     const dishesRepository = new DishesRepository();
     const dishesService = new DishesService(dishesRepository);
 
-    const dishes = await dishesService.getAllDishes();
+    const dishes = await dishesService.getAllDishes(userId);
 
     return res.json(dishes);
   }
@@ -47,22 +28,18 @@ class DishesController {
   async show(req: Request, res: Response) {
     const {
       params: { id },
-    } = await zParse(DishParamsSchema, req);
+      user: { id: userId },
+    } = await zParse(DishFetchOneSchema, req);
 
     const dishesRepository = new DishesRepository();
     const dishesService = new DishesService(dishesRepository);
 
-    const dish = await dishesService.getDishById(id);
+    const dish = await dishesService.getDishById(id, userId);
 
     return res.json(dish);
   }
 
   async create(req: Request, res: Response) {
-    console.log({
-      body: req.body,
-      file: req.file,
-    });
-
     const {
       body: { name, category, description, ingredients, price },
       file: { filename },

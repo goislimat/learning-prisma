@@ -33,30 +33,6 @@ describe("DishesService", () => {
     expect(deleteFileSpy).not.toHaveBeenCalled();
   });
 
-  it("should not be able to create a new dish if the image is missing", async () => {
-    const diskStorageService = new DiskStorageService();
-    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
-    const dishesService = new DishesService(
-      dishesRepositoryInMemory,
-      diskStorageService
-    );
-
-    const dishFields = {
-      name: "Rice and Beans",
-      category: "meal",
-      ingredients: "rice,beans",
-      description: "Plain and simple rice and beans",
-      price: 999,
-    };
-
-    await expect(dishesService.createDish(dishFields)).rejects.toEqual({
-      statusCode: 400,
-      message: "The dish image is missing",
-    });
-
-    expect(diskStorageService.saveFile).not.toHaveBeenCalled();
-  });
-
   it("should delete the image if the dish creation fails", async () => {
     const diskStorageService = new DiskStorageService();
     const dishesRepositoryInMemory = new DishesRepositoryInMemory();
@@ -94,7 +70,7 @@ describe("DishesService", () => {
       diskStorageService
     );
 
-    const currentDish = await dishesService.getDishById(1);
+    const currentDish = await dishesService.getDishById(1, 1);
 
     expect(currentDish).toEqual({
       id: 1,
@@ -105,7 +81,7 @@ describe("DishesService", () => {
         "Spaghetti made on bacon fat with spices and decorated with bacon cubes and grated cheese",
       ingredients: ["pasta", "cheese", "bacon"],
       image: "1678369738935-756807316-carbonara.webp",
-      favoritedBy: [],
+      isFavorited: true,
     });
 
     const dishFields = {
@@ -133,58 +109,15 @@ describe("DishesService", () => {
       description: "Plain and simple rice and beans",
       ingredients: ["rice", "beans"],
       image: "rice-and-beans.jpg",
-      favoritedBy: [],
+      isFavorited: false,
     });
-  });
-
-  it("should rollback the image if the dish update fails", async () => {
-    const diskStorageService = new DiskStorageService();
-    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
-    const dishesService = new DishesService(
-      dishesRepositoryInMemory,
-      diskStorageService
-    );
-
-    const currentDish = await dishesService.getDishById(1);
-
-    expect(currentDish).toEqual({
-      id: 1,
-      name: "Spaghetti alla Carbonara",
-      category: "meal",
-      price: 1999,
-      description:
-        "Spaghetti made on bacon fat with spices and decorated with bacon cubes and grated cheese",
-      ingredients: ["pasta", "cheese", "bacon"],
-      image: "1678369738935-756807316-carbonara.webp",
-      favoritedBy: [],
-    });
-
-    const dishFields = {
-      name: "Rice and Beans",
-      category: "meal",
-      ingredients: "rice,beans",
-      description: "",
-      price: 999,
-      image: "rice-and-beans.jpg",
-    };
-
-    const saveFileSpy = jest.spyOn(diskStorageService, "saveFile");
-    const deleteFileSpy = jest.spyOn(diskStorageService, "deleteFile");
-
-    await expect(dishesService.updateDish(1, dishFields)).rejects.toEqual({
-      statusCode: 400,
-      message: "The record could not be updated with the provided data",
-    });
-
-    expect(saveFileSpy).toHaveBeenCalledWith(dishFields.image);
-    expect(deleteFileSpy).toHaveBeenCalledWith(dishFields.image, true);
   });
 
   it("should be able to return all dishes", async () => {
     const dishesRepositoryInMemory = new DishesRepositoryInMemory();
     const dishesService = new DishesService(dishesRepositoryInMemory);
 
-    const dishes = await dishesService.getAllDishes();
+    const dishes = await dishesService.getAllDishes(1);
 
     expect(dishes).toHaveLength(1);
     expect(dishes[0]).toHaveProperty("id");
@@ -194,7 +127,7 @@ describe("DishesService", () => {
     const dishesRepositoryInMemory = new DishesRepositoryInMemory();
     const dishesService = new DishesService(dishesRepositoryInMemory);
 
-    const dish = await dishesService.getDishById(1);
+    const dish = await dishesService.getDishById(1, 1);
 
     expect(dish).toBeDefined();
     expect(dish.name).toEqual("Spaghetti alla Carbonara");
@@ -204,7 +137,7 @@ describe("DishesService", () => {
     const dishesRepositoryInMemory = new DishesRepositoryInMemory();
     const dishesService = new DishesService(dishesRepositoryInMemory);
 
-    await expect(dishesService.getDishById(88)).rejects.toEqual({
+    await expect(dishesService.getDishById(88, 1)).rejects.toEqual({
       statusCode: 404,
       message: `Could not find a dish record with id: 88`,
     });

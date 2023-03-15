@@ -1,4 +1,3 @@
-import { compare } from "bcryptjs";
 import UsersRepositoryInMemory from "../../repositories/UsersRepositoryInMemory";
 import UsersService from "../UsersService";
 
@@ -15,12 +14,6 @@ describe("UsersSevice", () => {
     const createdUser = await usersService.createUser(newUser);
 
     expect(createdUser).toHaveProperty("id");
-
-    const passwordsMatch = await compare(
-      newUser.password,
-      createdUser.password
-    );
-    expect(passwordsMatch).toBe(true);
   });
 
   it("should not allow users to insert the same email twice", async () => {

@@ -1,15 +1,16 @@
 import { z } from "zod";
+import { LikeParams } from "./../types/like";
 
+import {
+  DishCreateInput,
+  DishTransactionResponse,
+  DishUpdateInput,
+} from "../types/dish";
 import HandledError from "../utils/HandledError";
-import IDishesRepository, {
-  ICreateDishParams,
-  IDishWithIngredientsAndUser,
-  ILikeUpdate,
-  IUpdateDishParams,
-} from "./IDishesRepository";
+import IDishesRepository from "./IDishesRepository";
 
 class DishesRepositoryInMemory implements IDishesRepository {
-  public dishes: IDishWithIngredientsAndUser[] = [
+  public dishes: DishTransactionResponse[] = [
     {
       id: 1,
       image: "1678369738935-756807316-carbonara.webp",
@@ -29,12 +30,16 @@ class DishesRepositoryInMemory implements IDishesRepository {
           name: "bacon",
         },
       ],
-      favoritedBy: [],
+      favoritedBy: [
+        {
+          id: 1,
+        },
+      ],
     },
   ];
 
-  async findAll(): Promise<IDishWithIngredientsAndUser[]> {
-    const allDishes: Promise<IDishWithIngredientsAndUser[]> = new Promise(
+  async findAll(): Promise<DishTransactionResponse[]> {
+    const allDishes: Promise<DishTransactionResponse[]> = new Promise(
       (resolve) => {
         resolve(this.dishes);
       }
@@ -43,8 +48,8 @@ class DishesRepositoryInMemory implements IDishesRepository {
     return allDishes;
   }
 
-  async findById(id: number): Promise<IDishWithIngredientsAndUser> {
-    const dish: Promise<IDishWithIngredientsAndUser> = new Promise(
+  async findById(id: number): Promise<DishTransactionResponse> {
+    const dish: Promise<DishTransactionResponse> = new Promise(
       (resolve, reject) => {
         const fetchedDish = this.dishes.find((d) => d.id === id);
 
@@ -61,9 +66,9 @@ class DishesRepositoryInMemory implements IDishesRepository {
     return dish;
   }
 
-  async save(dish: ICreateDishParams): Promise<IDishWithIngredientsAndUser> {
-    const dishWithIngredients: Promise<IDishWithIngredientsAndUser> =
-      new Promise((resolve, reject) => {
+  async save(dish: DishCreateInput): Promise<DishTransactionResponse> {
+    const dishWithIngredients: Promise<DishTransactionResponse> = new Promise(
+      (resolve, reject) => {
         const createdDish = {
           ...dish,
           id: Math.floor(Math.random() * 100) + 1,
@@ -76,13 +81,14 @@ class DishesRepositoryInMemory implements IDishesRepository {
         this.dishes.push(createdDish);
 
         resolve(createdDish);
-      });
+      }
+    );
 
     return dishWithIngredients;
   }
 
-  async update(data: IUpdateDishParams): Promise<IDishWithIngredientsAndUser> {
-    const dish: Promise<IDishWithIngredientsAndUser> = new Promise(
+  async update(data: DishUpdateInput): Promise<DishTransactionResponse> {
+    const dish: Promise<DishTransactionResponse> = new Promise(
       (resolve, reject) => {
         const dish = this.dishes.find((d) => d.id === data.id);
 
@@ -138,54 +144,44 @@ class DishesRepositoryInMemory implements IDishesRepository {
     return dish;
   }
 
-  async saveLike({
-    userId,
-    dishId,
-  }: ILikeUpdate): Promise<IDishWithIngredientsAndUser> {
-    const dish: Promise<IDishWithIngredientsAndUser> = new Promise(
-      (resolve, reject) => {
-        const dish = this.dishes.find((d) => d.id === dishId);
+  async saveLike({ userId, dishId }: LikeParams): Promise<boolean> {
+    const dish: Promise<boolean> = new Promise((resolve, reject) => {
+      const dish = this.dishes.find((d) => d.id === dishId);
 
-        if (dish) {
-          dish.favoritedBy.push({ id: userId });
+      if (dish) {
+        dish.favoritedBy.push({ id: userId });
 
-          resolve(dish);
-        }
-
-        reject(
-          new HandledError(
-            `Unable to favorite dish ${dishId} for user ${userId}`,
-            422
-          )
-        );
+        resolve(true);
       }
-    );
+
+      reject(
+        new HandledError(
+          `Unable to favorite dish ${dishId} for user ${userId}`,
+          422
+        )
+      );
+    });
 
     return dish;
   }
 
-  async removeLike({
-    userId,
-    dishId,
-  }: ILikeUpdate): Promise<IDishWithIngredientsAndUser> {
-    const dish: Promise<IDishWithIngredientsAndUser> = new Promise(
-      (resolve, reject) => {
-        const dish = this.dishes.find((d) => d.id === dishId);
+  async removeLike({ userId, dishId }: LikeParams): Promise<boolean> {
+    const dish: Promise<boolean> = new Promise((resolve, reject) => {
+      const dish = this.dishes.find((d) => d.id === dishId);
 
-        if (dish) {
-          dish.favoritedBy = dish.favoritedBy.filter((u) => u.id !== userId);
+      if (dish) {
+        dish.favoritedBy = dish.favoritedBy.filter((u) => u.id !== userId);
 
-          resolve(dish);
-        }
-
-        reject(
-          new HandledError(
-            `Unable to unfavorite dish ${dishId} for user ${userId}`,
-            422
-          )
-        );
+        resolve(true);
       }
-    );
+
+      reject(
+        new HandledError(
+          `Unable to unfavorite dish ${dishId} for user ${userId}`,
+          422
+        )
+      );
+    });
 
     return dish;
   }

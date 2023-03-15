@@ -1,11 +1,12 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import {
+  DishCreateInput,
+  DishTransactionResponse,
+  DishUpdateInput,
+} from "../types/dish";
+import { LikeParams } from "../types/like";
 import HandledError from "../utils/HandledError";
-import IDishesRepository, {
-  ICreateDishParams,
-  IDishWithIngredientsAndUser,
-  ILikeUpdate,
-  IUpdateDishParams,
-} from "./IDishesRepository";
+import IDishesRepository from "./IDishesRepository";
 import {
   createDishWithIngredients,
   dislike,
@@ -18,13 +19,13 @@ import {
 class DishesRepository implements IDishesRepository {
   private prisma = new PrismaClient();
 
-  async findAll(): Promise<IDishWithIngredientsAndUser[]> {
+  async findAll(): Promise<DishTransactionResponse[]> {
     const dishes = await this.prisma.dish.findMany({ select });
 
     return dishes;
   }
 
-  async findById(id: number): Promise<IDishWithIngredientsAndUser> {
+  async findById(id: number): Promise<DishTransactionResponse> {
     try {
       const dish = await this.prisma.dish.findFirstOrThrow(findById(id));
 
@@ -44,7 +45,7 @@ class DishesRepository implements IDishesRepository {
     ingredients,
     price,
     description,
-  }: ICreateDishParams): Promise<IDishWithIngredientsAndUser> {
+  }: DishCreateInput): Promise<DishTransactionResponse> {
     try {
       const createdDish = await this.prisma.dish.create(
         createDishWithIngredients(
@@ -79,7 +80,7 @@ class DishesRepository implements IDishesRepository {
     ingredientsToRemove,
     price,
     description,
-  }: IUpdateDishParams): Promise<IDishWithIngredientsAndUser> {
+  }: DishUpdateInput): Promise<DishTransactionResponse> {
     try {
       const updatedDish = await this.prisma.dish.update(
         updateDishWithIngredients(
@@ -107,14 +108,11 @@ class DishesRepository implements IDishesRepository {
     }
   }
 
-  async saveLike({
-    userId,
-    dishId,
-  }: ILikeUpdate): Promise<IDishWithIngredientsAndUser> {
+  async saveLike({ userId, dishId }: LikeParams): Promise<boolean> {
     try {
-      const dish = await this.prisma.dish.update(like(userId, dishId));
+      await this.prisma.dish.update(like(userId, dishId));
 
-      return dish;
+      return true;
     } catch {
       throw new HandledError(
         `Unable to favorite dish ${dishId} for user ${userId}`,
@@ -123,14 +121,11 @@ class DishesRepository implements IDishesRepository {
     }
   }
 
-  async removeLike({
-    userId,
-    dishId,
-  }: ILikeUpdate): Promise<IDishWithIngredientsAndUser> {
+  async removeLike({ userId, dishId }: LikeParams): Promise<boolean> {
     try {
-      const dish = await this.prisma.dish.update(dislike(userId, dishId));
+      await this.prisma.dish.update(dislike(userId, dishId));
 
-      return dish;
+      return true;
     } catch {
       throw new HandledError(
         `Unable to unfavorite dish ${dishId} for user ${userId}`,

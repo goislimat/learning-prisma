@@ -1,25 +1,16 @@
 import { Request, Response } from "express";
-import { z } from "zod";
 
 import DishesRepository from "../repositories/DishesRepository";
 import DishLikesService from "../services/DishLikesService";
 import zParse from "../utils/zParse";
-
-const LikesSchema = z.object({
-  params: z.object({
-    dishId: z.coerce.number(),
-  }),
-  user: z.object({
-    id: z.number(),
-  }),
-});
+import { LikeSchema } from "./schemas/like";
 
 class LikesController {
   async create(req: Request, res: Response) {
     const {
       params: { dishId },
       user: { id: userId },
-    } = await zParse(LikesSchema, req);
+    } = await zParse(LikeSchema, req);
 
     const dishesRepository = new DishesRepository();
     const likesService = new DishLikesService(dishesRepository);
@@ -32,7 +23,7 @@ class LikesController {
     const {
       params: { dishId },
       user: { id: userId },
-    } = await zParse(LikesSchema, req);
+    } = await zParse(LikeSchema, req);
 
     const dishesRepository = new DishesRepository();
     const likesService = new DishLikesService(dishesRepository);

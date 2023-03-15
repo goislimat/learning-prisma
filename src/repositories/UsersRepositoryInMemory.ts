@@ -1,7 +1,8 @@
-import { Prisma } from "@prisma/client";
 import { hashSync } from "bcryptjs";
+
+import { User, UserCreateInput, UserWithoutPassword } from "../types/user";
 import HandledError from "../utils/HandledError";
-import IUsersRepository, { User } from "./IUsersRepository";
+import IUsersRepository from "./IUsersRepository";
 
 class UsersRepositoryInMemory implements IUsersRepository {
   public users: User[] = [
@@ -44,7 +45,11 @@ class UsersRepositoryInMemory implements IUsersRepository {
     return user;
   }
 
-  async save({ name, email, password }: Prisma.UserCreateInput): Promise<User> {
+  async save({
+    name,
+    email,
+    password,
+  }: UserCreateInput): Promise<UserWithoutPassword> {
     const createdUser: Promise<User> = new Promise((resolve, reject) => {
       const userAlreadyExists = this.users.find((user) => user.email === email);
 

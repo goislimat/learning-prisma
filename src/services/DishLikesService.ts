@@ -1,25 +1,17 @@
-import IDishesRepository, {
-  IDishWithIngredientsAndUser,
-} from "../repositories/IDishesRepository";
-
-interface LikeParams {
-  userId: number;
-  dishId: number;
-}
+import IDishesRepository from "../repositories/IDishesRepository";
+import { LikeParams } from "../types/like";
 
 class DishLikesService {
   constructor(private dishesRepository: IDishesRepository) {}
 
-  async like(params: LikeParams): Promise<IDishWithIngredientsAndUser> {
-    const dish = await this.dishesRepository.saveLike(params);
-
-    return dish;
+  async like(params: LikeParams): Promise<boolean> {
+    const result = await this.dishesRepository.saveLike(params);
+    return result;
   }
 
-  async dislike(params: LikeParams): Promise<IDishWithIngredientsAndUser> {
-    const dish = await this.dishesRepository.removeLike(params);
-
-    return dish;
+  async dislike(params: LikeParams): Promise<boolean> {
+    const result = await this.dishesRepository.removeLike(params);
+    return result;
   }
 }
 
