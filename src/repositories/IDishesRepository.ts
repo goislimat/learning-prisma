@@ -1,52 +1,17 @@
-import { Dish, Ingredient, User } from "@prisma/client";
-
-export interface ICreateDishParams {
-  image: string;
-  name: string;
-  category: string;
-  ingredients: string[];
-  description: string;
-  price: number;
-}
-
-export interface IUpdateDishParams {
-  id: number;
-  image: string;
-  name: string;
-  category: string;
-  ingredientsToAdd: string[];
-  ingredientsToRemove: string[];
-  description: string;
-  price: number;
-}
-
-export interface IDishWithIngredientsAndUser {
-  id: Dish["id"];
-  image: Dish["image"];
-  name: Dish["name"];
-  category: Dish["category"];
-  description: Dish["description"];
-  price: Dish["price"];
-  ingredients: {
-    name: Ingredient["name"];
-  }[];
-  favoritedBy: {
-    id: User["id"];
-  }[];
-}
-
-export interface ILikeUpdate {
-  userId: number;
-  dishId: number;
-}
+import {
+  DishCreateInput,
+  DishTransactionResponse,
+  DishUpdateInput,
+} from "../types/dish";
+import { LikeParams } from "../types/like";
 
 interface IDishesRepository {
-  findAll(): Promise<IDishWithIngredientsAndUser[]>;
-  findById(id: number): Promise<IDishWithIngredientsAndUser>;
-  save(data: ICreateDishParams): Promise<IDishWithIngredientsAndUser>;
-  update(data: IUpdateDishParams): Promise<IDishWithIngredientsAndUser>;
-  saveLike(data: ILikeUpdate): Promise<IDishWithIngredientsAndUser>;
-  removeLike(data: ILikeUpdate): Promise<IDishWithIngredientsAndUser>;
+  findAll(): Promise<DishTransactionResponse[]>;
+  findById(id: number): Promise<DishTransactionResponse>;
+  save(data: DishCreateInput): Promise<DishTransactionResponse>;
+  update(data: DishUpdateInput): Promise<DishTransactionResponse>;
+  saveLike(data: LikeParams): Promise<boolean>;
+  removeLike(data: LikeParams): Promise<boolean>;
 }
 
 export default IDishesRepository;

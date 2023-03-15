@@ -1,28 +1,12 @@
-import IDishesRepository, {
-  IDishWithIngredientsAndUser,
-} from "../repositories/IDishesRepository";
+import IDishesRepository from "../repositories/IDishesRepository";
+import {
+  DishCreateParams,
+  DishResponse,
+  DishTransactionResponse,
+  DishUpdateParams,
+} from "../types/dish";
 import HandledError from "../utils/HandledError";
 import DiskStorageService from "./DiskStorageService";
-
-interface IDishFields {
-  name: string;
-  category: string;
-  ingredients: string;
-  description: string;
-  price: number;
-  image?: string;
-}
-
-interface IFormattedDish {
-  id: number;
-  name: string;
-  category: string;
-  ingredients: string[];
-  description: string;
-  price: number;
-  image: string;
-  favoritedBy: number[];
-}
 
 class DishesService {
   constructor(
@@ -30,16 +14,16 @@ class DishesService {
     private diskStorageService: DiskStorageService = {} as DiskStorageService
   ) {}
 
-  async getAllDishes(): Promise<IFormattedDish[]> {
+  async getAllDishes(currentUser: number): Promise<DishResponse[]> {
     const dishes = await this.dishesRepository.findAll();
 
-    return dishes.map((dish) => this.getFormattedDish(dish));
+    return dishes.map((dish) => this.getFormattedDish(dish, currentUser));
   }
 
-  async getDishById(id: number): Promise<any> {
+  async getDishById(id: number, currentUser: number): Promise<DishResponse> {
     const dish = await this.dishesRepository.findById(id);
 
-    return this.getFormattedDish(dish);
+    return this.getFormattedDish(dish, currentUser);
   }
 
   async createDish({
@@ -49,7 +33,7 @@ class DishesService {
     description,
     price,
     image,
-  }: IDishFields): Promise<IFormattedDish> {
+  }: DishCreateParams): Promise<DishResponse> {
     if (!image) {
       throw new HandledError("The dish image is missing", 400);
     }
@@ -78,8 +62,8 @@ class DishesService {
 
   async updateDish(
     id: number,
-    { name, category, ingredients, description, price, image }: IDishFields
-  ): Promise<IFormattedDish> {
+    { name, category, ingredients, description, price, image }: DishUpdateParams
+  ): Promise<DishResponse> {
     const dish = await this.dishesRepository.findById(id);
 
     if (!dish) {
@@ -98,10 +82,10 @@ class DishesService {
       const updatedDish = await this.dishesRepository.update({
         id,
         image: image || dish.image,
-        name,
-        category,
-        price,
-        description,
+        name: name || dish.name,
+        category: category || dish.category,
+        price: price || dish.price,
+        description: description || dish.description,
         ingredientsToAdd,
         ingredientsToRemove,
       });
@@ -129,18 +113,27 @@ class DishesService {
     return ingredientsArray;
   }
 
-  private getFormattedDish(dish: IDishWithIngredientsAndUser): IFormattedDish {
+  private getFormattedDish(
+    { ingredients, favoritedBy, ...dish }: DishTransactionResponse,
+    currentUser?: number
+  ): DishResponse {
     return {
       ...dish,
-      ingredients: dish.ingredients.map((ingredient) => ingredient.name),
-      favoritedBy: dish.favoritedBy.map((user) => user.id),
+      ingredients: ingredients.map((ingredient) => ingredient.name),
+      isFavorited: !currentUser
+        ? false
+        : favoritedBy.some((user) => user.id === currentUser),
     };
   }
 
   private getIngredientsToUpdate(
     previousIngredients: { name: string }[],
-    newIngredients: string
+    newIngredients: string | undefined
   ): [string[], string[]] {
+    if (!newIngredients) {
+      return [[], []];
+    }
+
     const previousIngredientsArray = previousIngredients.map(
       (ingredient) => ingredient.name
     );

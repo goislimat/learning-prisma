@@ -6,10 +6,9 @@ describe("DishLikesService", () => {
     const dishesRepositoryInMemory = new DishesRepositoryInMemory();
     const dishLikesService = new DishLikesService(dishesRepositoryInMemory);
 
-    const dish = await dishLikesService.like({ userId: 2, dishId: 1 });
+    const result = await dishLikesService.like({ userId: 2, dishId: 1 });
 
-    expect(dish.favoritedBy).toHaveLength(1);
-    expect(dish.favoritedBy[0].id).toBe(2);
+    expect(result).toBe(true);
   });
 
   it("should throw an error if the dish doesn't exist", async () => {
@@ -30,9 +29,9 @@ describe("DishLikesService", () => {
 
     await dishLikesService.like({ userId: 2, dishId: 1 });
 
-    const dish = await dishLikesService.dislike({ userId: 2, dishId: 1 });
+    const result = await dishLikesService.dislike({ userId: 2, dishId: 1 });
 
-    expect(dish.favoritedBy).toHaveLength(0);
+    expect(result).toBe(true);
   });
 
   it("should throw an error if the dish doesn't exist", async () => {
