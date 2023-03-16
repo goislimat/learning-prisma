@@ -14,8 +14,8 @@ class DishesService {
     private diskStorageService: DiskStorageService = {} as DiskStorageService
   ) {}
 
-  async getAllDishes(currentUser: number): Promise<DishResponse[]> {
-    const dishes = await this.dishesRepository.findAll();
+  async getAllDishes(currentUser: number, q?: string): Promise<DishResponse[]> {
+    const dishes = await this.dishesRepository.findAll(q);
 
     return dishes.map((dish) => this.getFormattedDish(dish, currentUser));
   }

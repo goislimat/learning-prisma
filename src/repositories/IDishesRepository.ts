@@ -6,7 +6,7 @@ import {
 import { LikeParams } from "../types/like";
 
 interface IDishesRepository {
-  findAll(): Promise<DishTransactionResponse[]>;
+  findAll(q?: string): Promise<DishTransactionResponse[]>;
   findById(id: number): Promise<DishTransactionResponse>;
   save(data: DishCreateInput): Promise<DishTransactionResponse>;
   update(data: DishUpdateInput): Promise<DishTransactionResponse>;
