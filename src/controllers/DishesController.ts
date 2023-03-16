@@ -15,12 +15,13 @@ class DishesController {
   async index(req: Request, res: Response) {
     const {
       user: { id: userId },
+      query: { q },
     } = await zParse(DishFetchAllSchema, req);
 
     const dishesRepository = new DishesRepository();
     const dishesService = new DishesService(dishesRepository);
 
-    const dishes = await dishesService.getAllDishes(userId);
+    const dishes = await dishesService.getAllDishes(userId, q);
 
     return res.json(dishes);
   }

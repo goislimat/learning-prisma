@@ -38,9 +38,21 @@ class DishesRepositoryInMemory implements IDishesRepository {
     },
   ];
 
-  async findAll(): Promise<DishTransactionResponse[]> {
+  async findAll(q?: string): Promise<DishTransactionResponse[]> {
     const allDishes: Promise<DishTransactionResponse[]> = new Promise(
       (resolve) => {
+        if (q) {
+          const result: DishTransactionResponse[] = this.dishes.filter(
+            (d) =>
+              d.name.toLowerCase().includes(q.toLowerCase()) ||
+              d.ingredients.some((i) =>
+                i.name.toLowerCase().includes(q.toLowerCase())
+              )
+          );
+
+          resolve(result);
+        }
+
         resolve(this.dishes);
       }
     );

@@ -123,6 +123,33 @@ describe("DishesService", () => {
     expect(dishes[0]).toHaveProperty("id");
   });
 
+  it("should be able to return dishes querying a title", async () => {
+    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
+    const dishesService = new DishesService(dishesRepositoryInMemory);
+
+    const dishes = await dishesService.getAllDishes(1, "carbonara");
+
+    expect(dishes).toHaveLength(1);
+  });
+
+  it("should be able to return dishes querying an ingredient", async () => {
+    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
+    const dishesService = new DishesService(dishesRepositoryInMemory);
+
+    const dishes = await dishesService.getAllDishes(1, "pasta");
+
+    expect(dishes).toHaveLength(1);
+  });
+
+  it("should return nothing with a query that matches nothing", async () => {
+    const dishesRepositoryInMemory = new DishesRepositoryInMemory();
+    const dishesService = new DishesService(dishesRepositoryInMemory);
+
+    const dishes = await dishesService.getAllDishes(1, "chocolate");
+
+    expect(dishes).toHaveLength(0);
+  });
+
   it("should be able to fetch an existing record", async () => {
     const dishesRepositoryInMemory = new DishesRepositoryInMemory();
     const dishesService = new DishesService(dishesRepositoryInMemory);

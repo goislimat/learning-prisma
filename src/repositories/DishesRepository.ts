@@ -19,8 +19,34 @@ import {
 class DishesRepository implements IDishesRepository {
   private prisma = new PrismaClient();
 
-  async findAll(): Promise<DishTransactionResponse[]> {
-    const dishes = await this.prisma.dish.findMany({ select });
+  async findAll(q?: string): Promise<DishTransactionResponse[]> {
+    let dishes;
+
+    if (q) {
+      dishes = await this.prisma.dish.findMany({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: q,
+              },
+            },
+            {
+              ingredients: {
+                some: {
+                  name: {
+                    contains: q,
+                  },
+                },
+              },
+            },
+          ],
+        },
+        select,
+      });
+    } else {
+      dishes = await this.prisma.dish.findMany({ select });
+    }
 
     return dishes;
   }

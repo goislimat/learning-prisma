@@ -12,6 +12,12 @@ const UserRequestSchema = z.object({
   }),
 });
 
+const DishQuerySchema = z.object({
+  query: z.object({
+    q: z.string().optional(),
+  }),
+});
+
 const DishBodySchema = z.object({
   body: z.object({
     name: z.string(),
@@ -28,7 +34,7 @@ const DishFileSchema = z.object({
   }),
 });
 
-export const DishFetchAllSchema = UserRequestSchema;
+export const DishFetchAllSchema = UserRequestSchema.merge(DishQuerySchema);
 
 export const DishFetchOneSchema = DishParamsSchema.merge(UserRequestSchema);
 
